@@ -1,6 +1,10 @@
 package com.android.qin.one;
 
 import android.Manifest;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -46,6 +50,24 @@ public class RequestPermissionActivity extends BaseCompatActivity {
         super.onCheckPermissionsResult(isSuccess);
         ToastUtil.showLongToast("结果:" + isSuccess);
         LogUtil.i("结果:" + isSuccess);
+/*        if (!isSuccess) {
+            //没有打开需要的权限,则弹出对话框
+            new AlertDialog.Builder(this)
+                    .setTitle("帮助提醒")
+                    .setMessage("应用需要的必要权限已被禁用,去设置中开启权限列表")
+                    // 拒绝, 退出应用
+                    .setNegativeButton(android.R.string.cancel,
+                            (dialog, which) -> finish())
+
+                    .setPositiveButton(android.R.string.ok,
+                            (dialog, which) -> {
+                                Uri packageURI = Uri.parse("package:" + RequestPermissionActivity.this.getPackageName());
+                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
+                                startActivity(intent);
+                            })
+                    .setCancelable(false)
+                    .show();
+        }*/
     }
 
     @Override

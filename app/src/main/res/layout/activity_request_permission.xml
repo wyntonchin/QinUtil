@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="是否需要showRotate权限提示"
+        android:textAllCaps="false"
         android:textColor="@android:color/black" />
 
     <Button
@@ -17,5 +18,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="调用基类checkPermission"
+        android:textAllCaps="false"
         android:textColor="@android:color/black" />
 </LinearLayout>
