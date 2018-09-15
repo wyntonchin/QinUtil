@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.qin.one.ApkInstallPermissionActivity;
+import com.android.qin.one.RequestPermissionActivity;
 
 
 /**
@@ -30,6 +31,9 @@ public class OneFragment extends Fragment {
             mContentView = inflater.inflate(R.layout.fragment_one, container, false);
             mContentView.findViewById(R.id.test1).setOnClickListener(v -> {
                 startActivity(new Intent(getActivity(), ApkInstallPermissionActivity.class));
+            });
+            mContentView.findViewById(R.id.test2).setOnClickListener(v -> {
+                startActivity(new Intent(getActivity(), RequestPermissionActivity.class));
             });
         }
 
