@@ -219,6 +219,9 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
 
     private void showAppSettingsDialog() {
         //没有打开需要的权限,则弹出对话框
+        if(isFinishing()) {
+            return;
+        }
         new AlertDialog.Builder(this)
                 .setTitle("权限提醒")
                 .setMessage("应用需要的必要权限已被禁用,请去设置中开启权限列表")
