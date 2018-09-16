@@ -87,5 +87,6 @@ public class RequestPermissionActivity extends BaseCompatActivity {
         super.onPermissionFailed(permission);
         ToastUtil.showLongToast("失败:" + permission);
         LogUtil.i("失败:" + permission);
+        finish();
     }
 }

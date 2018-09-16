@@ -154,12 +154,11 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
      * @param permissions String[] 所有请求
      */
     protected void checkPermissions(String[] permissions) {
-        checkPermissions(permissions,null);
+        checkPermissions(permissions, null);
     }
 
     /**
-     *
-     * @param permissions String[] 所有请求
+     * @param permissions   String[] 所有请求
      * @param dialogMessage 如果不为空,代表一直要申请到为止
      */
     protected void checkPermissions(String[] permissions, String dialogMessage) {
@@ -196,11 +195,8 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
                         if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                             onPermissionGranted(permissions[i]);
                         } else {
-                            onPermissionFailed(permissions[i]);
-                            //不需要提醒的情况,直接返回
-                            if(mRationaleDialogMessage == null){
-                                continue;
-                            }
+                            //onPermissionFailed(permissions[i]);
+
                             //判断是否可以继续获取权限
                             boolean shouldRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i]);
                             if (shouldRationale) {
@@ -218,7 +214,14 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
                         ActivityCompat.requestPermissions(this, deniedPermissions, REQUEST_PERMISSIONS_CODE);
                     } else {//全部权限获取结果结束,如果存在永久拒绝,则提示跳转dialog
                         if (!mForeverDeniedPermissionList.isEmpty()) {
-                            showAppSettingsDialog();
+                            if (mRationaleDialogMessage == null) {
+                                onCheckPermissionsResult(false);
+                                for (String permission : mForeverDeniedPermissionList) {
+                                    onPermissionFailed(permission);
+                                }
+                            } else {
+                                showAppSettingsDialog();
+                            }
                         } else {
                             onCheckPermissionsResult(true);
                         }
@@ -236,7 +239,7 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
         }
         new AlertDialog.Builder(this)
                 .setTitle("权限提醒")
-                .setMessage("应用需要的必要权限已被禁用,请去设置中开启权限列表"+ mRationaleDialogMessage)
+                .setMessage("应用需要的必要权限已被禁用,请去设置中开启权限列表" + mRationaleDialogMessage)
                 // 拒绝, 退出应用
                 .setNegativeButton(android.R.string.cancel,
                         (dialog, which) -> onCheckPermissionsResult(false))
@@ -281,8 +284,6 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
             LogUtil.d(TAG, String.format(Locale.getDefault(), "%s %s", permission, "request_failed"));
         }
     }
-
-
 
 
     /**
@@ -330,6 +331,9 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
      */
     public boolean isGPSOpen() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if(locationManager == null){
+            return false;
+        }
         // 通过GPS卫星定位，定位级别可以精确到街（通过24颗卫星定位，在室外和空旷的地方定位准确、速度快）
         boolean gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
         // 通过WLAN或移动网络(3G/2G)确定的位置（也称作AGPS，辅助GPS定位。主要用于在室内或遮盖物（建筑群或茂密的深林等）密集的地方定位）
@@ -444,10 +448,7 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
      */
     public final boolean post(Runnable r) {
         Handler h = getHandler();
-        if (h == null) {
-            return false;
-        }
-        return h.post(r);
+        return h != null && h.post(r);
     }
 
     /**
@@ -467,7 +468,7 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
         if (h == null) {
             return false;
         }
-        return h.postDelayed(r, delay);
+        return h != null && h.postDelayed(r, delay);
     }
 
     /**
