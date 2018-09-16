@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.android.qin.R;
 import com.android.qin.base.BaseCompatActivity;
+import com.android.qin.base.aspectj.SingleClick;
 import com.android.qin.util.LogUtil;
 import com.android.qin.util.ToastUtil;
 
@@ -22,12 +23,7 @@ public class RequestPermissionActivity extends BaseCompatActivity {
         setContentView(R.layout.activity_request_permission);
 
         findViewById(R.id.check_rationale).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-        findViewById(R.id.check_list).setOnClickListener(new View.OnClickListener() {
+            @SingleClick
             @Override
             public void onClick(View v) {
                 checkPermissions(new String[]{
@@ -35,6 +31,15 @@ public class RequestPermissionActivity extends BaseCompatActivity {
                         Manifest.permission.READ_PHONE_STATE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.READ_CONTACTS,
+
+                },"巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉巴拉");
+            }
+        });
+        findViewById(R.id.check_list).setOnClickListener(new View.OnClickListener() {
+            @SingleClick
+            @Override
+            public void onClick(View v) {
+                checkPermissions(new String[]{
                         Manifest.permission.RECORD_AUDIO,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.BLUETOOTH,
