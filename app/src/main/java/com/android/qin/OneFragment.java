@@ -1,6 +1,7 @@
 package com.android.qin;
 
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -34,6 +35,15 @@ public class OneFragment extends Fragment {
             });
             mContentView.findViewById(R.id.test2).setOnClickListener(v -> {
                 startActivity(new Intent(getActivity(), RequestPermissionActivity.class));
+            });
+            mContentView.findViewById(R.id.test3).setOnClickListener(v -> {
+
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                ComponentName cn = new ComponentName("com.hismart.easylink", "com.hismart.easylink.launch.activity.StartupActivity");
+                intent.setComponent(cn);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                startActivity(intent);
             });
         }
 

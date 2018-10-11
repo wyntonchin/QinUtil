@@ -14,19 +14,19 @@
             android:id="@+id/test1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="android 8 未知apk安装权限测试"
+            android:text="android 8 apk 安装权限测试"
             android:textColor="@android:color/black"/>
         <Button
             android:id="@+id/test2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="android 6 权限获取测试"
+            android:text="其他权限测试"
             android:textColor="@android:color/black"/>
         <Button
             android:id="@+id/test3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="测试1"
+            android:text="拉起后台慧享家"
             android:textColor="@android:color/black"/>
         <Button
             android:id="@+id/test4"
