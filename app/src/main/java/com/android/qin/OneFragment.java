@@ -45,6 +45,15 @@ public class OneFragment extends Fragment {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
                 startActivity(intent);
             });
+            mContentView.findViewById(R.id.test4).setOnClickListener(v -> {
+                Intent intent = new Intent();
+/*                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_LAUNCHER);*/
+                ComponentName cn = new ComponentName("com.hismart.easylink", "com.hismart.easylink.launch.activity.StartupActivity");
+                intent.setComponent(cn);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                startActivity(intent);
+            });
         }
 
         // 缓存View判断是否含有parent, 如果有需要从parent删除, 否则发生已有parent的错误.
