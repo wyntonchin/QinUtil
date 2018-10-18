@@ -38,7 +38,7 @@
             android:id="@+id/test5"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="测试1"
+            android:text="通过包名启动应用"
             android:textColor="@android:color/black"/>
         <Button
             android:id="@+id/test6"
