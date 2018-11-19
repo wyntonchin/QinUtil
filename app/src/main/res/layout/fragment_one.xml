@@ -44,7 +44,7 @@
             android:id="@+id/test6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="测试1"
+            android:text="通知栏测试"
             android:textColor="@android:color/black"/>
         <Button
             android:id="@+id/test7"

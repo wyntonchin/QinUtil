@@ -1,14 +1,20 @@
 package com.android.qin;
 
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.android.qin.one.ApkInstallPermissionActivity;
@@ -66,6 +72,11 @@ public class OneFragment extends Fragment {
                         }else {
                             startActivity(intent);
                         }
+
+            });
+
+            mContentView.findViewById(R.id.test6).setOnClickListener(v -> {
+
 
             });
         }
