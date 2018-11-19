@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.android.peter.notificationdemo.MainActivity;
 import com.android.qin.one.ApkInstallPermissionActivity;
 import com.android.qin.one.RequestPermissionActivity;
 import com.android.qin.util.ToastUtil;
@@ -76,7 +77,7 @@ public class OneFragment extends Fragment {
             });
 
             mContentView.findViewById(R.id.test6).setOnClickListener(v -> {
-
+                getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
 
             });
         }
