@@ -77,7 +77,7 @@ public class OneFragment extends Fragment {
             });
 
             mContentView.findViewById(R.id.test6).setOnClickListener(v -> {
-                getActivity().startActivity(new Intent(getActivity(), MainActivity.class));
+                getActivity().startActivity(new Intent(getActivity(), com.android.peter.notificationdemo.MainActivity.class));
 
             });
         }

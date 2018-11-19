@@ -37,10 +37,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_notification);
 
         mContext = this;
-
+        NotificationChannels.createAllNotificationChannels(this);
         mNM = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         mSimple = findViewById(R.id.btn_simple);
