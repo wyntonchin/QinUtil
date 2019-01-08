@@ -1,1 +1,1 @@
-include ':app', ':NotificationDemo', ':wg-sdk'
+include ':app', ':NotificationDemo', ':wg-sdk', ':base', ':HiAccount'

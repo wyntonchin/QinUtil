@@ -16,7 +16,7 @@
             android:id="@+id/test1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="android 8 apk 权限测试"
+            android:text="登录界面"
             android:textColor="@android:color/black"/>
         <Button
             android:id="@+id/test2"

@@ -14,7 +14,7 @@ import static com.android.peter.notificationdemo.NotificationService.ACTION_SEND
 /**
  * @author peter
  */
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class NotifyMainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private final static String TAG = "NotificationDemo";
 
