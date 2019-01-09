@@ -20,4 +20,8 @@
     <string name="hi_account_input_username">用户名</string>
     <string name="hi_account_input_pwd">密码</string>
     <string name="hi_account_login_with_other_methods">可以使用以下方式登录</string>
+    <string name="hi_account_please_input_phone_number">请输入手机号</string>
+    <string name="hi_account_phone_number">手机号</string>
+    <string name="hi_account_approve_hisense_account">"同意海信账户的"</string>
+    <string name="hi_account_user_agreement">"用户协议"</string>
 </resources>

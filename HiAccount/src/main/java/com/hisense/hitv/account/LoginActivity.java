@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hismart.base.BaseToolbarCompatActivity;
+import com.hismart.base.LogUtil;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -57,15 +58,21 @@ public class LoginActivity extends BaseToolbarCompatActivity {
 
         ed_username = findViewById(R.id.username);
         ed_password = findViewById(R.id.password);
+        ed_password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
         tx_findpwd = findViewById(R.id.forget_password);
         tx_register = findViewById(R.id.register_now);
+        tx_register.setOnClickListener(v -> {
+            LogUtil.d(TAG, "Prepare to register");
+            Intent it_register;
+            it_register = new Intent(this.getApplicationContext(), RegisterMobileActivity.class);
+            LoginActivity.this.startActivity(it_register);
+        });
         btn_login = findViewById(R.id.btn_login);
         btn_pwd_dis = findViewById(R.id.btn_pwd_display);
         btn_wechat_login = findViewById(R.id.img_wechat);
         btn_sinablog_login = findViewById(R.id.img_sina_blog);
 
-        ed_password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
     }
 
     @Override

@@ -15,6 +15,12 @@ android {
             abiFilters "armeabi-v7a"
         }
     }
+
+    lintOptions {
+        //action-view 警告问题 https://blog.csdn.net/u013323018/article/details/82835241
+        disable 'GoogleAppIndexingWarning'
+        baseline file("lint-baseline.xml")
+    }
     externalNativeBuild{
         ndkBuild{
             path file ("src/main/jni/Android.mk")
