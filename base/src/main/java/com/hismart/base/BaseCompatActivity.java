@@ -6,13 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -81,11 +85,6 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
         //ActivityStack.getInstance().finishActivity();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
     /*********************************************************************************************************************************
      * 权限请求 相关函数
      * 权限组列表：
@@ -128,6 +127,28 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
      * Manifest.permission.WRITE_EXTERNAL_STORAGE
      ********************************************************************************************************************************/
     private static final int REQUEST_PERMISSIONS_CODE = 0x1000;
+    private static final int REQUEST_SETTINGS_CODE = 0x1001;
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_SETTINGS_CODE) {
+            LogUtil.i("权限 REQUEST_SETTINGS_CODE, resultCode = " + resultCode);
+            if (!mForeverDeniedPermissionList.isEmpty()) {
+                checkPermissions(mForeverDeniedPermissionList.toArray(new String[mForeverDeniedPermissionList.size()]), mRationaleDialogMessage);
+            }
+        }
+    }
+
+    /**
+     * 记录永久拒绝的权限列表
+     */
+    private List<String> mForeverDeniedPermissionList = new ArrayList<>();
+
+    /**
+     * 记录获取权限失败后,需要显示的提示信息
+     */
+    private String mRationaleDialogMessage = null;
 
     /**
      * 权限请求相关函数
@@ -135,20 +156,32 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
      * @param permissions String[] 所有请求
      */
     protected void checkPermissions(String[] permissions) {
-        List<String> permissionDeniedList = new ArrayList<>();
+        checkPermissions(permissions, null);
+    }
+
+    /**
+     * @param permissions   String[] 所有请求
+     * @param dialogMessage 如果不为空,代表一直要申请到为止
+     */
+    protected void checkPermissions(String[] permissions, String dialogMessage) {
+        mRationaleDialogMessage = dialogMessage;
+        //清空永久拒绝的权限列表
+        mForeverDeniedPermissionList.clear();
+        List<String> permissionRequestList = new ArrayList<>();
         for (String permission : permissions) {
             int permissionCheck = ContextCompat.checkSelfPermission(this, permission);
             if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
                 onPermissionGranted(permission);
             } else {
-                permissionDeniedList.add(permission);
+                permissionRequestList.add(permission);
             }
         }
-        if (!permissionDeniedList.isEmpty()) {
-            String[] deniedPermissions = permissionDeniedList.toArray(new String[permissionDeniedList.size()]);
+        if (!permissionRequestList.isEmpty()) {
+            String[] deniedPermissions = permissionRequestList.toArray(new String[permissionRequestList.size()]);
             ActivityCompat.requestPermissions(this, deniedPermissions, REQUEST_PERMISSIONS_CODE);
-        }else {
-            onPermissionListGranted();
+        } else {
+            //已经获取全部权限
+            onCheckPermissionsResult(true);
         }
     }
 
@@ -159,17 +192,41 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_PERMISSIONS_CODE:
                 if (grantResults.length > 0) {
-                    boolean hasFailed = false;
+                    List<String> permissionDeniedList = new ArrayList<>();
                     for (int i = 0; i < grantResults.length; i++) {
                         if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                             onPermissionGranted(permissions[i]);
                         } else {
-                            onPermissionFailed(permissions[i]);
-                            hasFailed = true;
+                            //onPermissionFailed(permissions[i]);
+
+                            //判断是否可以继续获取权限
+                            boolean shouldRationale = ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[i]);
+                            if (shouldRationale) {
+                                permissionDeniedList.add(permissions[i]);
+                            } else {
+                                //用户选中拒绝和不再询问,确定权限获取失败
+                                mForeverDeniedPermissionList.add(permissions[i]);
+                            }
                         }
                     }
-                    if(!hasFailed){
-                        onPermissionListGranted();
+
+                    //可以获取的权限再次申请获取,如果去获取权限
+                    if (!permissionDeniedList.isEmpty()) {
+                        String[] deniedPermissions = permissionDeniedList.toArray(new String[permissionDeniedList.size()]);
+                        ActivityCompat.requestPermissions(this, deniedPermissions, REQUEST_PERMISSIONS_CODE);
+                    } else {//全部权限获取结果结束,如果存在永久拒绝,则提示跳转dialog
+                        if (!mForeverDeniedPermissionList.isEmpty()) {
+                            if (mRationaleDialogMessage == null) {
+                                onCheckPermissionsResult(false);
+                                for (String permission : mForeverDeniedPermissionList) {
+                                    onPermissionFailed(permission);
+                                }
+                            } else {
+                                showAppSettingsDialog();
+                            }
+                        } else {
+                            onCheckPermissionsResult(true);
+                        }
                     }
                 }
                 break;
@@ -177,6 +234,36 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
         }
     }
 
+    private void showAppSettingsDialog() {
+        //没有打开需要的权限,则弹出对话框
+        if (isFinishing()) {
+            return;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle("权限提醒")
+                .setMessage("应用需要的必要权限已被禁用,请去设置中开启权限列表" + mRationaleDialogMessage)
+                // 拒绝, 退出应用
+                .setNegativeButton(android.R.string.cancel,
+                        (dialog, which) -> onCheckPermissionsResult(false))
+
+                .setPositiveButton(android.R.string.ok,
+                        (dialog, which) -> {
+                            Uri packageURI = Uri.parse("package:" + BaseCompatActivity.this.getPackageName());
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
+                            startActivityForResult(intent, REQUEST_SETTINGS_CODE);
+                        })
+                .setCancelable(false)
+                .show();
+    }
+
+    /**
+     * 所有申请的权限获取成功
+     */
+    protected void onCheckPermissionsResult(boolean isSuccess) {
+        if (isActive) {
+            LogUtil.d(TAG, String.format(Locale.getDefault(), "%s", "request_list_success"));
+        }
+    }
 
     /**
      * 权限允许
@@ -200,15 +287,6 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * 所有申请的权限获取成功
-     *
-     */
-    protected void onPermissionListGranted() {
-        if (isActive) {
-            LogUtil.d(TAG, String.format(Locale.getDefault(), "%s", "request_list_success"));
-        }
-    }
 
     protected static final int REQUEST_OPEN_BT_CODE = 0x1001;
     protected static final int REQUEST_OPEN_GPS_CODE = 0x1002;
@@ -456,6 +534,28 @@ public abstract class BaseCompatActivity extends AppCompatActivity {
             ret = ret.getParent();
         }
         return ret;
+    }
+
+
+    LoadingDialogFragment mDialogFragment = null;
+
+    public void showProgressDialog(boolean cancelable) {
+        mDialogFragment = new LoadingDialogFragment();
+        //1 设置任意非0主题可以去除圆角Card外的边框,使dialog全屏
+        //2 直接使用apptheme会影响dialog的statusbar
+        mDialogFragment.setStyle(DialogFragment.STYLE_NORMAL, -1);
+        mDialogFragment.setCancelable(cancelable);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        mDialogFragment.show(ft, LoadingDialogFragment.POP_NAME_DIALOG);
+
+    }
+
+    public void dismissProgressDialog() {
+        if (mDialogFragment != null) {
+            mDialogFragment.dismiss();
+        }
+        mDialogFragment = null;
     }
 
 }

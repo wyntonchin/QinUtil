@@ -1,34 +1,31 @@
 package com.hisense.hitv.account;
 
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
+import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Message;
+import android.support.v4.content.ContextCompat;
 import android.text.InputType;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.hisense.hitv.account.pool.PriorityExecutor;
+import com.hisense.hitv.account.pool.PriorityRunnable;
+import com.hisense.hitv.hicloud.bean.account.AppCodeReply;
+import com.hisense.hitv.hicloud.bean.account.SignonReplyInfo;
+import com.hismart.base.BaseConstant;
 import com.hismart.base.BaseToolbarCompatActivity;
 import com.hismart.base.LogUtil;
+import com.hismart.base.ToastUtil;
+import com.tencent.mm.opensdk.modelmsg.SendAuth;
+import com.tencent.mm.opensdk.openapi.IWXAPI;
+import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.ExecutorService;
 
 public class LoginActivity extends BaseToolbarCompatActivity {
 
@@ -44,6 +41,10 @@ public class LoginActivity extends BaseToolbarCompatActivity {
 
     private ImageButton btn_pwd_dis;
 
+    private IWXAPI api = null;
+
+    ExecutorService mExecutorService = new PriorityExecutor(4, false);
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +53,7 @@ public class LoginActivity extends BaseToolbarCompatActivity {
         setMiddleTitle(R.string.title_activity_login);
         setContentView(R.layout.activity_login);
         findViews();
+        checkPermissions(new String[]{ Manifest.permission.READ_PHONE_STATE},"需要获取手机状态");
     }
 
     private void findViews() {
@@ -69,10 +71,16 @@ public class LoginActivity extends BaseToolbarCompatActivity {
             LoginActivity.this.startActivity(it_register);
         });
         btn_login = findViewById(R.id.btn_login);
+        btn_login.setOnClickListener(v -> {
+            doLogin();
+        });
+
         btn_pwd_dis = findViewById(R.id.btn_pwd_display);
         btn_wechat_login = findViewById(R.id.img_wechat);
+        btn_wechat_login.setOnClickListener(v -> {
+            doWeChatLogin();
+        });
         btn_sinablog_login = findViewById(R.id.img_sina_blog);
-
     }
 
     @Override
@@ -101,10 +109,62 @@ public class LoginActivity extends BaseToolbarCompatActivity {
         super.onDestroy();
     }
 
-
     @Override
     protected void processMessage(Message msg) {
 
+    }
+
+    void doLogin(){
+        if (ed_username.getText() == null || ed_username.getText().toString().isEmpty()) {
+            ToastUtil.showShortToast(R.string.hi_account_please_input_phone_number);
+            return;
+        }
+        showProgressDialog(false);
+        PriorityRunnable priorityRunnable = new PriorityRunnable(PriorityRunnable.Priority.NORMAL, new Runnable() {
+            @Override
+            public void run() {
+                LogUtil.e(TAG, "btn_login:" + Thread.currentThread().getName());
+                //先认证APP
+                AppCodeReply appCodeReply = HiServiceImpl.obtain().appAuth(BaseConstant.APP_KEY, BaseConstant.APP_SECRET);
+                if (appCodeReply != null && appCodeReply.getReply() == 0) {
+                    //认证账号
+                    SignonReplyInfo sigonReply = HiServiceImpl.obtain().login(ed_username.getText().toString(), ed_password.getText().toString(),
+                            HiServiceImpl.obtain().getDeviceId(LoginActivity.this), appCodeReply.getCode());
+                    if(sigonReply !=null && sigonReply.getToken() !=null){
+                        LogUtil.e(TAG, "doLogin getCustomerId:" + sigonReply.getCustomerId());
+                        runOnUiThread(() -> ToastUtil.showShortToast("登录成功"));
+                    }else {
+                        runOnUiThread(() -> ToastUtil.showShortToast("登录失败"));
+                    }
+                }else {
+                    runOnUiThread(() -> ToastUtil.showShortToast("应用认证失败"));
+                }
+                runOnUiThread(() -> dismissProgressDialog());
+            }
+        });
+        mExecutorService.execute(priorityRunnable);
+    }
+
+
+    void doWeChatLogin(){
+        LogUtil.e(TAG, "doWeChatLogin");
+        // 通过WXAPIFactory工厂，获取IWXAPI的实例
+        api = WXAPIFactory.createWXAPI(this, BaseConstant.WECHAT_APP_ID, true);
+        if (!api.isWXAppInstalled()) {
+            ToastUtil.showShortToast("请先安装微信客户端");
+            return;
+        }
+        // 将应用的appId注册到微信
+        if (api.registerApp(BaseConstant.WECHAT_APP_ID)) {
+            LogUtil.i(TAG, "Register app to wechat successfully");
+        } else {
+            ToastUtil.showShortToast(R.string.hi_account_wechat_register_app_failed);
+            return;
+        }
+        SendAuth.Req req = new SendAuth.Req();
+        req.scope = "snsapi_userinfo";
+        req.state = "HisenseControl";
+        api.sendReq(req);
     }
 
 }

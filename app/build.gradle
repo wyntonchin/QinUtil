@@ -2,9 +2,26 @@ apply plugin: 'com.android.application'
 apply plugin: 'android-aspectjx'
 
 android {
+    signingConfigs {
+        release {
+            keyAlias 'smarthome'
+            keyPassword 'hisense'
+            storeFile file('../release key')
+            storePassword 'hisense'
+        }
+        debug {
+            keyAlias 'smarthome'
+            keyPassword 'hisense'
+            storeFile file('../release key')
+            storePassword 'hisense'
+        }
+    }
+
+
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.android.qin"
+        //applicationId "com.hismart.easylink"
         minSdkVersion 22
         targetSdkVersion 28
         versionCode 1
@@ -35,6 +52,18 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    flavorDimensions "default" //统一使用一个维度
+    productFlavors {//多渠道打包使用
+        hismart {
+            applicationId "com.hismart.easylink"
+           // manifestPlaceholders = [channel: "hismart"]
+        }
+        qin {
+            applicationId "com.android.qin"
+           // manifestPlaceholders = [channel: "qin"]
+        }
     }
 }
 
