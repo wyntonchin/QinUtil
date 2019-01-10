@@ -25,4 +25,6 @@
     <string name="hi_account_approve_hisense_account">"同意海信账户的"</string>
     <string name="hi_account_user_agreement">"用户协议"</string>
     <string name="hi_account_wechat_register_app_failed">"注册应用失败"</string>
+    <string name="hi_account_wechat_share_success">"分享成功"</string>
+    <string name="hi_account_wechat_share_fail">"分享失败"</string>
 </resources>

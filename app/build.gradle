@@ -65,6 +65,11 @@ android {
            // manifestPlaceholders = [channel: "qin"]
         }
     }
+
+    lintOptions {
+        disable 'MissingTranslation'
+        disable 'ExtraTranslation'
+    }
 }
 
 dependencies {

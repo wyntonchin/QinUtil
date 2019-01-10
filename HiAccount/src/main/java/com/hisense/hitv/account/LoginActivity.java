@@ -30,6 +30,11 @@ import java.util.concurrent.ExecutorService;
 public class LoginActivity extends BaseToolbarCompatActivity {
 
     private final static String TAG = "LoginActivity";
+
+    public final static int ID_BLOG_SINA = 1003;
+    public final static int ID_QQ = 1002;
+    public final static int ID_WECHAT = 1100;
+
     private EditText ed_username;
     private EditText ed_password;
     private TextView tx_findpwd;
@@ -123,7 +128,7 @@ public class LoginActivity extends BaseToolbarCompatActivity {
         PriorityRunnable priorityRunnable = new PriorityRunnable(PriorityRunnable.Priority.NORMAL, new Runnable() {
             @Override
             public void run() {
-                LogUtil.e(TAG, "btn_login:" + Thread.currentThread().getName());
+                LogUtil.w(TAG, "btn_login:" + Thread.currentThread().getName());
                 //先认证APP
                 AppCodeReply appCodeReply = HiServiceImpl.obtain().appAuth(BaseConstant.APP_KEY, BaseConstant.APP_SECRET);
                 if (appCodeReply != null && appCodeReply.getReply() == 0) {

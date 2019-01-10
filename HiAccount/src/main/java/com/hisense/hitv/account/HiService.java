@@ -7,6 +7,7 @@ import com.hisense.hitv.hicloud.bean.account.AppCodeSSO;
 import com.hisense.hitv.hicloud.bean.account.CustomerInfo;
 import com.hisense.hitv.hicloud.bean.account.ReplyInfo;
 import com.hisense.hitv.hicloud.bean.account.SignonReplyInfo;
+import com.hisense.hitv.hicloud.bean.account.ThirdAccountOauthLoginReplay;
 
 import java.util.HashMap;
 
@@ -109,4 +110,14 @@ public interface HiService {
      * 获取token
      */
     String getToken();
+
+
+    /**
+     * 第三方登录
+     * @param map
+     * @return
+     */
+    ThirdAccountOauthLoginReplay thirdAccountOauthLogin(HashMap<String, String> map);
+
+
 }

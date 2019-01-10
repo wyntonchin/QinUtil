@@ -8,6 +8,7 @@ import com.hisense.hitv.hicloud.bean.account.AppCodeSSO;
 import com.hisense.hitv.hicloud.bean.account.CustomerInfo;
 import com.hisense.hitv.hicloud.bean.account.ReplyInfo;
 import com.hisense.hitv.hicloud.bean.account.SignonReplyInfo;
+import com.hisense.hitv.hicloud.bean.account.ThirdAccountOauthLoginReplay;
 import com.hisense.hitv.hicloud.bean.global.HiSDKInfo;
 import com.hisense.hitv.hicloud.factory.HiCloudServiceFactory;
 import com.hisense.hitv.hicloud.service.HiCloudAccountService;
@@ -183,6 +184,23 @@ public class HiServiceImpl implements HiService {
     public String getToken() {
         return AccountSpUtil.getString(TOKEN);
     }
+
+    @Override
+    public ThirdAccountOauthLoginReplay thirdAccountOauthLogin(HashMap<String, String> map) {
+        ThirdAccountOauthLoginReplay oauthLoginReplay = getService().thirdAccountOauthLogin(map);
+        SignonReplyInfo  reply= oauthLoginReplay.getSignonReplyInfo();
+        if(reply != null){
+            saveToken(reply);
+        }
+        return oauthLoginReplay;
+    }
+
+/*    private void saveOauthToken(ThirdAccountOauthLoginReplay reply) {
+        AccountSpUtil.setString(TOKEN, reply.getThirdAccessToken());
+        AccountSpUtil.setString(TOKEN_REFRESH, reply.getRefreshToken());
+        AccountSpUtil.setLong(TOKEN_CREATE, reply.getTokenCreateTime());
+        AccountSpUtil.setLong(TOKEN_EXPIRE, reply.getTokenExpireTime());
+    }*/
 
     private void saveToken(SignonReplyInfo reply) {
         AccountSpUtil.setString(TOKEN, reply.getToken());

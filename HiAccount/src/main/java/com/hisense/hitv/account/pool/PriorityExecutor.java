@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class PriorityExecutor extends ThreadPoolExecutor {
 
-    private static final int CORE_POOL_SIZE = 4;//核心线程池大小
+    private static final int CORE_POOL_SIZE = 5;//核心线程池大小
     private static final int MAXIMUM_POOL_SIZE = 8;//最大线程池队列大小
     private static final int KEEP_ALIVE = 30;//保持存活时间，当线程数大于corePoolSize的空闲线程能保持的最大时间。
     private static final AtomicLong SEQ_SEED = new AtomicLong(0);//主要获取添加任务
