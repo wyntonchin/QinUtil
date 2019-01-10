@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import com.hisense.hitv.hicloud.bean.account.AppCodeReply;
 import com.hisense.hitv.hicloud.bean.account.AppCodeSSO;
 import com.hisense.hitv.hicloud.bean.account.CustomerInfo;
+import com.hisense.hitv.hicloud.bean.account.GetUriReply;
 import com.hisense.hitv.hicloud.bean.account.ReplyInfo;
 import com.hisense.hitv.hicloud.bean.account.SignonReplyInfo;
 import com.hisense.hitv.hicloud.bean.account.ThirdAccountOauthLoginReplay;
@@ -25,6 +26,7 @@ public class HiServiceImpl implements HiService {
 
     private static final String TOKEN = "HiServiceToken";
     private static final String TOKEN_CREATE = "HiServiceTokenCreate";
+
     private static final String TOKEN_EXPIRE = "HiServiceTokenExpire";
     private static final String TOKEN_REFRESH = "HiServiceTokenRefresh";
 
@@ -72,7 +74,7 @@ public class HiServiceImpl implements HiService {
         AppCodeSSO reply = getService().appAuthSSO(map);
         if (reply.getReply() != 2) {
             String appCodeSSO = reply.getCode();
-            map = new HashMap<>();
+            map = new HashMap<>(3);
             map.put(Params.APPCODE, appCodeSSO);
             map.put(Params.LOGINNAME, "");
             map.put(Params.DEVICEID, deviceId);
@@ -83,6 +85,21 @@ public class HiServiceImpl implements HiService {
         }
         return reply;
     }
+
+    @Override
+    public GetUriReply getUri(HashMap<String, String> map) {
+        return getService().getUri(map);
+    }
+
+    //@Override
+    public GetUriReply getUri(String tokenSSO, String blogId, String callBackPath) {
+        HashMap<String, String> map = new HashMap<>(3);
+        map.put(Params.ACCESSTOKEN, tokenSSO); //TODO
+        map.put(Params.BLOGID, blogId);
+        map.put(Params.CALLBACKPATH, callBackPath);
+        return getService().getUri(map);
+    }
+
 
     @Override
     public SignonReplyInfo login(String loginName, String password, String deviceId, String appCode) {

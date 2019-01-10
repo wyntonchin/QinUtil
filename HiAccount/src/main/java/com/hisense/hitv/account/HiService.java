@@ -5,6 +5,7 @@ import android.content.Context;
 import com.hisense.hitv.hicloud.bean.account.AppCodeReply;
 import com.hisense.hitv.hicloud.bean.account.AppCodeSSO;
 import com.hisense.hitv.hicloud.bean.account.CustomerInfo;
+import com.hisense.hitv.hicloud.bean.account.GetUriReply;
 import com.hisense.hitv.hicloud.bean.account.ReplyInfo;
 import com.hisense.hitv.hicloud.bean.account.SignonReplyInfo;
 import com.hisense.hitv.hicloud.bean.account.ThirdAccountOauthLoginReplay;
@@ -26,6 +27,11 @@ public interface HiService {
      */
     AppCodeSSO appSSOAuth(String appKey, String appSecret, String deviceId);
 
+    /**
+     *
+     * 获取发给SSO认证的Uri
+     */
+    GetUriReply getUri(HashMap<String, String> map);
     /**
      * 登录
      */

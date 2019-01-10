@@ -3,6 +3,7 @@ package com.hisense.hitv.account;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.content.ContextCompat;
@@ -15,8 +16,18 @@ import android.widget.TextView;
 
 import com.hisense.hitv.account.pool.PriorityExecutor;
 import com.hisense.hitv.account.pool.PriorityRunnable;
+import com.hisense.hitv.account.pool.ThreadPoolProxyFactory;
 import com.hisense.hitv.hicloud.bean.account.AppCodeReply;
+import com.hisense.hitv.hicloud.bean.account.AppCodeSSO;
+import com.hisense.hitv.hicloud.bean.account.BlogInfo;
+import com.hisense.hitv.hicloud.bean.account.BlogStatusReply;
+import com.hisense.hitv.hicloud.bean.account.GetUriReply;
 import com.hisense.hitv.hicloud.bean.account.SignonReplyInfo;
+import com.hisense.hitv.hicloud.bean.global.HiSDKInfo;
+import com.hisense.hitv.hicloud.factory.HiCloudServiceFactory;
+import com.hisense.hitv.hicloud.service.HiCloudAccountService;
+import com.hisense.hitv.hicloud.util.DeviceConfig;
+import com.hisense.hitv.hicloud.util.Params;
 import com.hismart.base.BaseConstant;
 import com.hismart.base.BaseToolbarCompatActivity;
 import com.hismart.base.LogUtil;
@@ -25,9 +36,12 @@ import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.ExecutorService;
 
-public class LoginActivity extends BaseToolbarCompatActivity {
+public class LoginActivity extends BaseToolbarCompatActivity implements OAuthLoginActivity.AuthListener {
 
     private final static String TAG = "LoginActivity";
 
@@ -48,7 +62,6 @@ public class LoginActivity extends BaseToolbarCompatActivity {
 
     private IWXAPI api = null;
 
-    ExecutorService mExecutorService = new PriorityExecutor(4, false);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,7 +71,7 @@ public class LoginActivity extends BaseToolbarCompatActivity {
         setMiddleTitle(R.string.title_activity_login);
         setContentView(R.layout.activity_login);
         findViews();
-        checkPermissions(new String[]{ Manifest.permission.READ_PHONE_STATE},"需要获取手机状态");
+        checkPermissions(new String[]{Manifest.permission.READ_PHONE_STATE}, "需要获取手机状态");
     }
 
     private void findViews() {
@@ -86,6 +99,9 @@ public class LoginActivity extends BaseToolbarCompatActivity {
             doWeChatLogin();
         });
         btn_sinablog_login = findViewById(R.id.img_sina_blog);
+        btn_sinablog_login.setOnClickListener(v -> {
+            doWeiboLogin();
+        });
     }
 
     @Override
@@ -119,7 +135,7 @@ public class LoginActivity extends BaseToolbarCompatActivity {
 
     }
 
-    void doLogin(){
+    void doLogin() {
         if (ed_username.getText() == null || ed_username.getText().toString().isEmpty()) {
             ToastUtil.showShortToast(R.string.hi_account_please_input_phone_number);
             return;
@@ -135,24 +151,24 @@ public class LoginActivity extends BaseToolbarCompatActivity {
                     //认证账号
                     SignonReplyInfo sigonReply = HiServiceImpl.obtain().login(ed_username.getText().toString(), ed_password.getText().toString(),
                             HiServiceImpl.obtain().getDeviceId(LoginActivity.this), appCodeReply.getCode());
-                    if(sigonReply !=null && sigonReply.getToken() !=null){
+                    if (sigonReply != null && sigonReply.getToken() != null) {
                         LogUtil.e(TAG, "doLogin getCustomerId:" + sigonReply.getCustomerId());
                         runOnUiThread(() -> ToastUtil.showShortToast("登录成功"));
-                    }else {
+                    } else {
                         runOnUiThread(() -> ToastUtil.showShortToast("登录失败"));
                     }
-                }else {
+                } else {
                     runOnUiThread(() -> ToastUtil.showShortToast("应用认证失败"));
                 }
                 runOnUiThread(() -> dismissProgressDialog());
             }
         });
-        mExecutorService.execute(priorityRunnable);
+        ThreadPoolProxyFactory.getNormal().execute(priorityRunnable);
     }
 
 
-    void doWeChatLogin(){
-        LogUtil.e(TAG, "doWeChatLogin");
+    void doWeChatLogin() {
+        LogUtil.w(TAG, "doWeChatLogin");
         // 通过WXAPIFactory工厂，获取IWXAPI的实例
         api = WXAPIFactory.createWXAPI(this, BaseConstant.WECHAT_APP_ID, true);
         if (!api.isWXAppInstalled()) {
@@ -172,4 +188,89 @@ public class LoginActivity extends BaseToolbarCompatActivity {
         api.sendReq(req);
     }
 
+    public final static int BLOG_SINA_ID = 1003;
+    private static final String oAuthCallBack = "weibo4android://OAuthSettingActivity";
+    void doWeiboLogin() {
+        LogUtil.w(TAG, "doWeiboLogin");
+        showProgressDialog(false);
+        PriorityRunnable priorityRunnable = new PriorityRunnable(PriorityRunnable.Priority.NORMAL, new Runnable() {
+            @Override
+            public void run() {
+                //根据应用获取云端配置的appCodeSSO
+                AppCodeSSO appCodeSSO = HiServiceImpl.obtain().appSSOAuth(BaseConstant.APP_KEY, BaseConstant.APP_SECRET, DeviceConfig.getDeviceId(LoginActivity.this));
+                String tokenSSO = appCodeSSO.getToken();
+                LogUtil.w(TAG, "doWeiboLogin tokenSSO:" + tokenSSO + "; code : " + appCodeSSO.getCode());
+
+                HashMap<String, String> map = new HashMap<String, String>();
+                map.put(Params.ACCESSTOKEN, tokenSSO); //TODO
+                map.put(Params.BLOGID, Integer.toString(BLOG_SINA_ID));
+                map.put(Params.CALLBACKPATH, oAuthCallBack);
+                HiSDKInfo info2 = new HiSDKInfo();
+                info2.setDomainName("bas.wg.hismarttv.com");
+                //info2.setToken(tokenSSO);
+                HiCloudAccountService service2 = HiCloudServiceFactory
+                        .getHiCloudAccountService(info2);
+
+                GetUriReply uriReply = service2.getUri(map);
+                //sendMessage(mHandler, MSG_HICLOUD_GetUri, uri);
+                LogUtil.w(TAG, "doWeiboLogin GetUriReply = " + uriReply.getUri());
+                //OAuthLoginActivity.authorize(LoginActivity.this, uriReply.getUri(), LoginActivity.this, BLOG_SINA_ID);
+
+/*
+                LogUtil.w(TAG, "doWeiboLogin run:" + Thread.currentThread().getName());
+                HiSDKInfo info = new HiSDKInfo();
+                info.setDomainName("bas.wg.hismarttv.com");
+                info.setToken(tokenSSO);
+                HiCloudAccountService service = HiCloudServiceFactory
+                        .getHiCloudAccountService(info);
+                BlogStatusReply blogListReply = service.getBinders();
+
+                if (blogListReply != null && blogListReply.getReply() == 0) {
+                    List<BlogInfo> blogs = blogListReply.getBlogList();
+                    LogUtil.w(TAG, "doWeiboLogin run:blogs.size = " + blogs.size());
+                    if (BuildConfig.DEBUG) {
+                        for (BlogInfo blogInfo : blogs) {
+                            LogUtil.d(TAG, "BlogInfo name:" + blogInfo.getBlogName());
+                        }
+                    }
+
+                } else if ((blogListReply != null) && blogListReply.getReply() != 0) {
+                    LogUtil.w(TAG, "doWeiboLogin run:bloglist = " + blogListReply.getReply());
+                } else {
+                    LogUtil.w(TAG, "doWeiboLogin run:bloglist error");
+                }*/
+                runOnUiThread(() -> dismissProgressDialog());
+            }
+        });
+        ThreadPoolProxyFactory.getNormal().execute(priorityRunnable);
+
+/*
+
+
+
+        GetUriReply uri = service.getUri(map);
+
+
+        LogUtil.d(TAG, "Obtain oauth uri is:" + OAuthUri);
+        OAuthLoginActivity.authorize(LoginActivity.this, OAuthUri,
+                LoginActivity.this, targetID);
+*/
+
+
+    }
+
+    @Override
+    public void onSuccess(String url) {
+
+    }
+
+    @Override
+    public void onCancel() {
+
+    }
+
+    @Override
+    public void onError() {
+
+    }
 }
