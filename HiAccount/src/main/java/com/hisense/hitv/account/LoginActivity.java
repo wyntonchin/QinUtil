@@ -186,6 +186,8 @@ public class LoginActivity extends BaseToolbarCompatActivity implements OAuthLog
         req.scope = "snsapi_userinfo";
         req.state = "HisenseControl";
         api.sendReq(req);
+        //此处如果认证失败，微信直接会弹出“登陆失败”toast
+        LogUtil.w(TAG, "doWeChatLogin end");
     }
 
     void startWeiboEntry() {

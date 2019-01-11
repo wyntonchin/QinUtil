@@ -157,10 +157,10 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                     LogUtil.i(TAG, "weixin thirdReplay 22222222222");
                     if (thirdReplay != null && thirdReplay.getSignonReplyInfo() != null) {
                         LogUtil.e(TAG, "doweixinLogin getCustomerId:" + thirdReplay.getSignonReplyInfo().getCustomerId());
-                        runOnUiThread(() -> ToastUtil.showShortToast("登录成功"));
+                        runOnUiThread(() -> ToastUtil.showShortToast("微信登录成功"));
                     } else {
                         LogUtil.e(TAG, "doweixinLogin thirdReplay :" + thirdReplay);
-                        runOnUiThread(() -> ToastUtil.showShortToast("登录失败"));
+                        runOnUiThread(() -> ToastUtil.showShortToast("微信登录失败"));
                     }
                 } else {
                     LogUtil.e(TAG, "weixin appCodeReply error:" + appCodeReply.getReply());
