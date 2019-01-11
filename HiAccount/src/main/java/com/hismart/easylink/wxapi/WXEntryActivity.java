@@ -132,9 +132,6 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
             ToastUtil.showLongToast("微信错误");
         }
 
-
-
-
         finish();
         //Toast.makeText(this, "error", Toast.LENGTH_LONG).show();
     }
@@ -162,7 +159,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                         LogUtil.e(TAG, "doweixinLogin getCustomerId:" + thirdReplay.getSignonReplyInfo().getCustomerId());
                         runOnUiThread(() -> ToastUtil.showShortToast("登录成功"));
                     } else {
-                        LogUtil.e(TAG, "doweixinLogin getCustomerId:" + thirdReplay.getThirdAccessToken());
+                        LogUtil.e(TAG, "doweixinLogin thirdReplay :" + thirdReplay);
                         runOnUiThread(() -> ToastUtil.showShortToast("登录失败"));
                     }
                 } else {

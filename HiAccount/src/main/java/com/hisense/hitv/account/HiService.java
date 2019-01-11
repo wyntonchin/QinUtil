@@ -28,10 +28,15 @@ public interface HiService {
     AppCodeSSO appSSOAuth(String appKey, String appSecret, String deviceId);
 
     /**
-     *
      * 获取发给SSO认证的Uri
      */
     GetUriReply getUri(HashMap<String, String> map);
+
+    /**
+     * 获取发给SSO认证的Uri
+     */
+    GetUriReply getUri(String tokenSSO, int blogId, String callBackPath);
+
     /**
      * 登录
      */

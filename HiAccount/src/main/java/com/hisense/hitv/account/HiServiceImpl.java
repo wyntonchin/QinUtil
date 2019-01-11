@@ -88,16 +88,17 @@ public class HiServiceImpl implements HiService {
 
     @Override
     public GetUriReply getUri(HashMap<String, String> map) {
+        /*        HashMap<String, String> map = new HashMap<>(3);
+        map.put(Params.ACCESSTOKEN, tokenSSO); //TODO
+        map.put(Params.BLOGID, blogId);
+        map.put(Params.CALLBACKPATH, callBackPath);*/
         return getService().getUri(map);
     }
 
-    //@Override
-    public GetUriReply getUri(String tokenSSO, String blogId, String callBackPath) {
-        HashMap<String, String> map = new HashMap<>(3);
-        map.put(Params.ACCESSTOKEN, tokenSSO); //TODO
-        map.put(Params.BLOGID, blogId);
-        map.put(Params.CALLBACKPATH, callBackPath);
-        return getService().getUri(map);
+    @Override
+    public GetUriReply getUri(String tokenSSO, int blogId, String callBackPath) {
+
+        return getService().getUri(tokenSSO,blogId,callBackPath);
     }
 
 

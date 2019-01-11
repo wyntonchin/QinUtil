@@ -100,7 +100,7 @@ public class LoginActivity extends BaseToolbarCompatActivity implements OAuthLog
         });
         btn_sinablog_login = findViewById(R.id.img_sina_blog);
         btn_sinablog_login.setOnClickListener(v -> {
-            doWeiboLogin();
+            startWeiboEntry();
         });
     }
 
@@ -188,75 +188,9 @@ public class LoginActivity extends BaseToolbarCompatActivity implements OAuthLog
         api.sendReq(req);
     }
 
-    public final static int BLOG_SINA_ID = 1003;
-    private static final String oAuthCallBack = "weibo4android://OAuthSettingActivity";
-    void doWeiboLogin() {
-        LogUtil.w(TAG, "doWeiboLogin");
-        showProgressDialog(false);
-        PriorityRunnable priorityRunnable = new PriorityRunnable(PriorityRunnable.Priority.NORMAL, new Runnable() {
-            @Override
-            public void run() {
-                //根据应用获取云端配置的appCodeSSO
-                AppCodeSSO appCodeSSO = HiServiceImpl.obtain().appSSOAuth(BaseConstant.APP_KEY, BaseConstant.APP_SECRET, DeviceConfig.getDeviceId(LoginActivity.this));
-                String tokenSSO = appCodeSSO.getToken();
-                LogUtil.w(TAG, "doWeiboLogin tokenSSO:" + tokenSSO + "; code : " + appCodeSSO.getCode());
-
-                HashMap<String, String> map = new HashMap<String, String>();
-                map.put(Params.ACCESSTOKEN, tokenSSO); //TODO
-                map.put(Params.BLOGID, Integer.toString(BLOG_SINA_ID));
-                map.put(Params.CALLBACKPATH, oAuthCallBack);
-                HiSDKInfo info2 = new HiSDKInfo();
-                info2.setDomainName("bas.wg.hismarttv.com");
-                //info2.setToken(tokenSSO);
-                HiCloudAccountService service2 = HiCloudServiceFactory
-                        .getHiCloudAccountService(info2);
-
-                GetUriReply uriReply = service2.getUri(map);
-                //sendMessage(mHandler, MSG_HICLOUD_GetUri, uri);
-                LogUtil.w(TAG, "doWeiboLogin GetUriReply = " + uriReply.getUri());
-                //OAuthLoginActivity.authorize(LoginActivity.this, uriReply.getUri(), LoginActivity.this, BLOG_SINA_ID);
-
-/*
-                LogUtil.w(TAG, "doWeiboLogin run:" + Thread.currentThread().getName());
-                HiSDKInfo info = new HiSDKInfo();
-                info.setDomainName("bas.wg.hismarttv.com");
-                info.setToken(tokenSSO);
-                HiCloudAccountService service = HiCloudServiceFactory
-                        .getHiCloudAccountService(info);
-                BlogStatusReply blogListReply = service.getBinders();
-
-                if (blogListReply != null && blogListReply.getReply() == 0) {
-                    List<BlogInfo> blogs = blogListReply.getBlogList();
-                    LogUtil.w(TAG, "doWeiboLogin run:blogs.size = " + blogs.size());
-                    if (BuildConfig.DEBUG) {
-                        for (BlogInfo blogInfo : blogs) {
-                            LogUtil.d(TAG, "BlogInfo name:" + blogInfo.getBlogName());
-                        }
-                    }
-
-                } else if ((blogListReply != null) && blogListReply.getReply() != 0) {
-                    LogUtil.w(TAG, "doWeiboLogin run:bloglist = " + blogListReply.getReply());
-                } else {
-                    LogUtil.w(TAG, "doWeiboLogin run:bloglist error");
-                }*/
-                runOnUiThread(() -> dismissProgressDialog());
-            }
-        });
-        ThreadPoolProxyFactory.getNormal().execute(priorityRunnable);
-
-/*
-
-
-
-        GetUriReply uri = service.getUri(map);
-
-
-        LogUtil.d(TAG, "Obtain oauth uri is:" + OAuthUri);
-        OAuthLoginActivity.authorize(LoginActivity.this, OAuthUri,
-                LoginActivity.this, targetID);
-*/
-
-
+    void startWeiboEntry() {
+        Intent intent = new Intent(LoginActivity.this,WeiboEntry.class);
+        startActivity(intent);
     }
 
     @Override

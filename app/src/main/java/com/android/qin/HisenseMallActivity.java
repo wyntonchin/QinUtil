@@ -26,7 +26,7 @@ import com.hismart.base.BaseToolbarCompatActivity;
 public class HisenseMallActivity extends BaseToolbarCompatActivity {
     private static final String TAG = "HisenseMallActivity";
 
-    private static final String HISENSE_MALL_URL = "https://m.hisense.com";
+    private static final String HISENSE_MALL_URL = "https://m.taobao.com";
     LinearLayout mWebParentLayout;
     WebView mWebView;
     ContentLoadingProgressBar mLoadingProgressBar;
