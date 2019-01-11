@@ -33,7 +33,7 @@ public class ThreeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         if (mContentView == null) {
-            mContentView = inflater.inflate(R.layout.fragment_one, container, false);
+            mContentView = inflater.inflate(R.layout.fragment_three, container, false);
             mContentView.findViewById(R.id.test1).setOnClickListener(v -> {
                 startActivity(new Intent(getActivity(), LoginActivity.class));
             });

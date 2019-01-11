@@ -1,5 +1,6 @@
 package com.hismart.base;
 
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
@@ -219,7 +220,8 @@ public abstract class BaseToolbarCompatActivity extends BaseCompatActivity {
         this.isBack = isBack;
         if (mToolbar != null) {
             if (isBack) {
-                //mToolbar.setNavigationIcon(R.drawable.base_toolbar_back);
+                //mToolbar.setNavigationIcon(com.android.internal.R.drawable.ic_ab_back_holo_light);
+                mToolbar.setNavigationIcon(Resources.getSystem().getIdentifier("ic_menu_back", "drawable", "android"));
                 if (text != null) {
                     mToolbar.setTitle(text);
                     mToolbar.setTitleTextColor(0xFFFFFF);
