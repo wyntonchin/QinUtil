@@ -6,7 +6,7 @@ import android.os.Bundle;
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.hismart.base.LogUtil;
-import com.hismart.base.router.RemoteLoginService;
+import com.hismart.base.router.IRouteLoginService;
 import com.hismart.base.router.RouterPath;
 
 @Route(path = "/splash/splash")
@@ -18,7 +18,7 @@ public class SplashActivity extends AppCompatActivity {
         setContentView(R.layout.activity_splash);
         LogUtil.i(TAG,"onCreate");
 
-        RemoteLoginService loginService =   (RemoteLoginService) ARouter.getInstance().build(RouterPath.HIACCOUNT_SERVICE_LOGIN_).navigation();
+        IRouteLoginService loginService =   (IRouteLoginService) ARouter.getInstance().build(RouterPath.HIACCOUNT_SERVICE_LOGIN_).navigation();
         loginService.isLogin();
 
         if(loginService.isLogin()){

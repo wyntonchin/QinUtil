@@ -1,14 +1,12 @@
 package com.android.peter.notificationdemo;
 
-import android.app.Application;
-
-import com.hismart.base.ModuleApplication;
+import com.hismart.base.BaseApplication;
 
 /**
  * Created by  peter on 2018/7/11.
  */
 
-public class CustomApplication extends ModuleApplication {
+public class CustomApplication extends BaseApplication {
 
     @Override
     public void onCreate() {
