@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.alibaba.android.arouter.launcher.ARouter;
 import com.android.qin.one.ApkInstallPermissionActivity;
 import com.android.qin.one.RequestPermissionActivity;
 import com.android.qin.util.ToastUtil;
@@ -38,7 +39,9 @@ public class ThreeFragment extends Fragment {
                 startActivity(new Intent(getActivity(), LoginActivity.class));
             });
             mContentView.findViewById(R.id.test2).setOnClickListener(v -> {
-                startActivity(new Intent(getActivity(), RequestPermissionActivity.class));
+
+                //splashactivity
+                ARouter.getInstance().build("/splash/splash").navigation();
             });
         }
 

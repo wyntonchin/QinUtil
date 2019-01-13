@@ -31,6 +31,7 @@ import java.util.Map;
  * description 描述 Utils初始化类
  */
 public class AppUtil {
+
     //ApplicationContext
     private static final String TAG = "AppUtil";
     //private static Application context;

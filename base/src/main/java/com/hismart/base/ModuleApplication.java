@@ -5,6 +5,8 @@ import android.app.Application;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.alibaba.android.arouter.launcher.ARouter;
+
 public class ModuleApplication extends Application {
     public static final String TAG = "MyApplication";
     public static Context mContext;
@@ -17,6 +19,13 @@ public class ModuleApplication extends Application {
             mContext = this;
             //AppUtil 初始化（方便全局获取ApplicationContext,RefWatcher）
             AppUtil.init(this);
+
+            if (BuildConfig.DEBUG) {
+                //开启InstantRun之后，一定要在ARouter.init之前调用openDebug
+                ARouter.openDebug();
+                ARouter.openLog();
+            }
+            ARouter.init(this);
         }
     }
 

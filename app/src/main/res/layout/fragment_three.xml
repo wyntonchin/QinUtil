@@ -22,7 +22,7 @@
             android:id="@+id/test2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="测试1"
+            android:text="路由启动splash"
             android:textColor="@android:color/black"/>
         <Button
             android:id="@+id/test3"

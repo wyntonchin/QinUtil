@@ -74,14 +74,17 @@ public abstract class BaseToolbarCompatActivity extends BaseCompatActivity {
         //mToolbar.setPopupTheme(R.style.Base_ThemeOverlay_AppCompat_Light);
         //mToolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
         //mToolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        mToolbar.setNavigationOnClickListener(v -> {
-            if (isBack) {
-                pressToolbarNavigation();
-            } else {
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isBack) {
+                    pressToolbarNavigation();
+                } else {
 
+                }
             }
         });
-        //setSupportActionBar(mToolbar);
+                //setSupportActionBar(mToolbar);
     }
 
     /**
@@ -99,6 +102,7 @@ public abstract class BaseToolbarCompatActivity extends BaseCompatActivity {
         } else {
         }
     }
+
     /**
      * 返回按钮事件
      */
@@ -265,7 +269,12 @@ public abstract class BaseToolbarCompatActivity extends BaseCompatActivity {
             return;
         }
         if (textClickListener != null) {
-            leftText.setOnClickListener(v -> textClickListener.onClick());
+            leftText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    textClickListener.onClick();
+                }
+            });
         }
     }
 
@@ -300,7 +309,12 @@ public abstract class BaseToolbarCompatActivity extends BaseCompatActivity {
             return;
         }
         if (textClickListener != null) {
-            rightText.setOnClickListener(v -> textClickListener.onClick());
+            rightText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    textClickListener.onClick();
+                }
+            });
         }
     }
 
@@ -472,18 +486,21 @@ public abstract class BaseToolbarCompatActivity extends BaseCompatActivity {
         if (itemData.showAction == MenuItemData.SHOW_ACTION_AT_TITLE) {
             MenuItemCompat.setShowAsAction(menuItem, MenuItem.SHOW_AS_ACTION_ALWAYS);
         }
-        menuItem.setOnMenuItemClickListener(item -> {
-            if (itemData.listener != null) {
-                itemData.listener.onClick();
+        menuItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (itemData.listener != null) {
+                    itemData.listener.onClick();
+                }
+                return true;
             }
-            return true;
         });
     }
 
     /**
      * 获取菜单列表
      *
-     * @return HashMap<Integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               MenuItemData> MenuList
+     * @return HashMap<Integer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               MenuItemData> MenuList
      */
     protected HashMap<Integer, MenuItemData> getMenuList() {
         return menuItemDataHashMap;

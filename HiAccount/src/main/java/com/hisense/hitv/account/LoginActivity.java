@@ -2,11 +2,8 @@ package com.hisense.hitv.account;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
-import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,33 +11,21 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.hisense.hitv.account.pool.PriorityExecutor;
+import com.alibaba.android.arouter.facade.annotation.Route;
 import com.hisense.hitv.account.pool.PriorityRunnable;
 import com.hisense.hitv.account.pool.ThreadPoolProxyFactory;
 import com.hisense.hitv.hicloud.bean.account.AppCodeReply;
-import com.hisense.hitv.hicloud.bean.account.AppCodeSSO;
-import com.hisense.hitv.hicloud.bean.account.BlogInfo;
-import com.hisense.hitv.hicloud.bean.account.BlogStatusReply;
-import com.hisense.hitv.hicloud.bean.account.GetUriReply;
 import com.hisense.hitv.hicloud.bean.account.SignonReplyInfo;
-import com.hisense.hitv.hicloud.bean.global.HiSDKInfo;
-import com.hisense.hitv.hicloud.factory.HiCloudServiceFactory;
-import com.hisense.hitv.hicloud.service.HiCloudAccountService;
-import com.hisense.hitv.hicloud.util.DeviceConfig;
-import com.hisense.hitv.hicloud.util.Params;
 import com.hismart.base.BaseConstant;
 import com.hismart.base.BaseToolbarCompatActivity;
 import com.hismart.base.LogUtil;
+import com.hismart.base.router.RouterPath;
 import com.hismart.base.ToastUtil;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.concurrent.ExecutorService;
-
+@Route(path = RouterPath.HIACCOUNT_ACTIVITY_LOGIN)
 public class LoginActivity extends BaseToolbarCompatActivity implements OAuthLoginActivity.AuthListener {
 
     private final static String TAG = "LoginActivity";
