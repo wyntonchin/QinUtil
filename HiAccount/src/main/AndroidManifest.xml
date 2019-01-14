@@ -22,6 +22,7 @@
         android:theme="@style/BaseTheme">
         <activity
             android:name=".LoginActivity"
+            android:launchMode="singleTask"
             android:label="@string/title_activity_login" />
         <activity
             android:name=".RegisterMobileActivity"
@@ -38,7 +39,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".WeiboEntry"
+        <activity android:name=".WeiboEntryActivity"
             android:launchMode="singleTop"
             android:theme="@style/OAuthLoginDialogStyle"/>
 

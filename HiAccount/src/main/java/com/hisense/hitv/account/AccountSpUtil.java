@@ -70,7 +70,7 @@ public class AccountSpUtil {
     }
 
     public static String getString(String key) {
-        return getString(key, "");
+        return getString(key, null);
     }
 
     public static String getString(String key, String defaultValue) {

@@ -25,15 +25,17 @@ import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
 
+import java.lang.ref.WeakReference;
+
 @Route(path = RouterPath.HIACCOUNT_ACTIVITY_LOGIN)
-public class LoginActivity extends BaseToolbarCompatActivity implements OAuthLoginActivity.AuthListener {
+public class LoginActivity extends BaseToolbarCompatActivity {
 
     private final static String TAG = "LoginActivity";
 
     public final static int ID_BLOG_SINA = 1003;
     public final static int ID_QQ = 1002;
     public final static int ID_WECHAT = 1100;
-
+    public  static WeakReference<LoginActivity> weakLoginActivity;
     private EditText ed_username;
     private EditText ed_password;
     private TextView tx_findpwd;
@@ -51,7 +53,7 @@ public class LoginActivity extends BaseToolbarCompatActivity implements OAuthLog
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        weakLoginActivity = new WeakReference<>(this);
         setLeftButtonIsBack(false);
         setMiddleTitle(R.string.title_activity_login);
         setContentView(R.layout.activity_login);
@@ -81,11 +83,11 @@ public class LoginActivity extends BaseToolbarCompatActivity implements OAuthLog
         btn_pwd_dis = findViewById(R.id.btn_pwd_display);
         btn_wechat_login = findViewById(R.id.img_wechat);
         btn_wechat_login.setOnClickListener(v -> {
-            doWeChatLogin();
+            doWeChatEntry();
         });
         btn_sinablog_login = findViewById(R.id.img_sina_blog);
         btn_sinablog_login.setOnClickListener(v -> {
-            startWeiboEntry();
+            doWeiboEntry();
         });
     }
 
@@ -152,7 +154,7 @@ public class LoginActivity extends BaseToolbarCompatActivity implements OAuthLog
     }
 
 
-    void doWeChatLogin() {
+    void doWeChatEntry() {
         LogUtil.w(TAG, "doWeChatLogin");
         // 通过WXAPIFactory工厂，获取IWXAPI的实例
         api = WXAPIFactory.createWXAPI(this, BaseConstant.WECHAT_APP_ID, true);
@@ -175,23 +177,22 @@ public class LoginActivity extends BaseToolbarCompatActivity implements OAuthLog
         LogUtil.w(TAG, "doWeChatLogin end");
     }
 
-    void startWeiboEntry() {
-        Intent intent = new Intent(LoginActivity.this,WeiboEntry.class);
+    void doWeiboEntry() {
+        Intent intent = new Intent(LoginActivity.this,WeiboEntryActivity.class);
         startActivity(intent);
     }
 
-    @Override
-    public void onSuccess(String url) {
-
+    void startMainActivity(){
+        //Intent intent = new Intent(LoginActivity.this,Main.class);
+        //startActivity(intent);
+        //跳转到主页后，关闭登录页
+        finish();
     }
 
-    @Override
-    public void onCancel() {
-
-    }
-
-    @Override
-    public void onError() {
-
+    public static void finishLoginActivity(){
+       LoginActivity activity = LoginActivity.weakLoginActivity.get();
+        if(activity != null){
+            activity.finish();
+        }
     }
 }

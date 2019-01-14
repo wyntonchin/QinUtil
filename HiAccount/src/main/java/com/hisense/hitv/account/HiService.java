@@ -113,9 +113,9 @@ public interface HiService {
     String getDeviceId(Context context);
 
     /**
-     * 检查token是否过期
+     * 检查token是否将过期
      */
-    boolean isTokenExpire();
+    boolean isTokenWillExpire();
 
     /**
      * 获取token

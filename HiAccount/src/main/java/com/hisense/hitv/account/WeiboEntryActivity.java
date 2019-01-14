@@ -2,7 +2,6 @@ package com.hisense.hitv.account;
 
 import android.app.Activity;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.hisense.hitv.account.pool.PriorityRunnable;
@@ -16,11 +15,10 @@ import com.hisense.hitv.hicloud.util.Params;
 import com.hismart.base.BaseConstant;
 import com.hismart.base.LogUtil;
 import com.hismart.base.ToastUtil;
-import com.hismart.easylink.wxapi.WXEntryActivity;
 
 import java.util.HashMap;
 
-public class WeiboEntry extends Activity implements OAuthLoginActivity.AuthListener {
+public class WeiboEntryActivity extends Activity implements OAuthLoginActivity.AuthListener {
     private final static String TAG = "WeiboEntry";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,22 +27,22 @@ public class WeiboEntry extends Activity implements OAuthLoginActivity.AuthListe
         doWeiboLogin();
     }
 
-
     private static final String oAuthCallBack = "weibo4android://OAuthSettingActivity";
+
     void doWeiboLogin() {
         LogUtil.w(TAG, "doWeiboLogin");
         PriorityRunnable priorityRunnable = new PriorityRunnable(PriorityRunnable.Priority.NORMAL, new Runnable() {
             @Override
             public void run() {
                 //根据应用获取云端配置的appCodeSSO
-                AppCodeSSO appCodeSSO = HiServiceImpl.obtain().appSSOAuth(BaseConstant.APP_KEY, BaseConstant.APP_SECRET, DeviceConfig.getDeviceId(WeiboEntry.this));
+                AppCodeSSO appCodeSSO = HiServiceImpl.obtain().appSSOAuth(BaseConstant.APP_KEY, BaseConstant.APP_SECRET, DeviceConfig.getDeviceId(WeiboEntryActivity.this));
                 String tokenSSO = appCodeSSO.getToken();
                 LogUtil.w(TAG, "doWeiboLogin tokenSSO:" + tokenSSO + "; code : " + appCodeSSO.getCode());
                 if(tokenSSO != null){
                     //获取登录微博的url
                     GetUriReply uriReply = HiServiceImpl.obtain().getUri(tokenSSO, LoginActivity.ID_BLOG_SINA, oAuthCallBack);
                     LogUtil.w(TAG, "doWeiboLogin GetUriReply = " + uriReply.getUri());
-                    OAuthLoginActivity.authorizeActivity(WeiboEntry.this, uriReply.getUri(), WeiboEntry.this, LoginActivity.ID_BLOG_SINA);
+                    OAuthLoginActivity.authorizeActivity(WeiboEntryActivity.this, uriReply.getUri(), WeiboEntryActivity.this, LoginActivity.ID_BLOG_SINA);
                 }
             }
         });
@@ -55,20 +53,6 @@ public class WeiboEntry extends Activity implements OAuthLoginActivity.AuthListe
     public void onSuccess(String url) {
         LogUtil.e(TAG,"onSuccess");
         finish();
-
-/*        LogUtil.d(TAG, "onSuccess, " + verifyCode);
-        ShowDialog(WAIT_DAILOG);
-        mAccountManager.OAuthLogin(verifyCode, targetID);
-
-        HashMap<String, String> authMap = new HashMap<>(4);
-        authMap.put(Params.THIRD_CALLBACK, "code=" + authResp.code + "&appid=" + BaseConstant.WECHAT_APP_ID);
-        authMap.put(Params.THIRD_PLATFORMID, String.valueOf(LoginActivity.ID_WECHAT));
-        authMap.put(Params.APPCODE, appCodeReply.getCode());
-        authMap.put(Params.DEVICEID, DeviceConfig.getDeviceId(WXEntryActivity.this.getApplicationContext()));
-        LogUtil.i(TAG, "weibo thirdReplay 11111111111");
-        ThirdAccountOauthLoginReplay thirdReplay = HiServiceImpl.obtain().thirdAccountOauthLogin(authMap);*/
-
-
         String verifyCode = Uri.parse(url).getQuery();
         PriorityRunnable priorityRunnable = new PriorityRunnable(PriorityRunnable.Priority.NORMAL, new Runnable() {
             @Override
@@ -82,13 +66,14 @@ public class WeiboEntry extends Activity implements OAuthLoginActivity.AuthListe
                     authMap.put(Params.THIRD_CALLBACK, verifyCode);
                     authMap.put(Params.THIRD_PLATFORMID, String.valueOf(LoginActivity.ID_BLOG_SINA));
                     authMap.put(Params.APPCODE, appCodeReply.getCode());
-                    authMap.put(Params.DEVICEID, DeviceConfig.getDeviceId(WeiboEntry.this.getApplicationContext()));
+                    authMap.put(Params.DEVICEID, DeviceConfig.getDeviceId(WeiboEntryActivity.this.getApplicationContext()));
                     LogUtil.i(TAG, "weibo thirdReplay 11111111111");
                     ThirdAccountOauthLoginReplay thirdReplay = HiServiceImpl.obtain().thirdAccountOauthLogin(authMap);
                     LogUtil.i(TAG, "weibo thirdReplay 22222222222");
                     if (thirdReplay != null && thirdReplay.getSignonReplyInfo() != null) {
                         LogUtil.e(TAG, "doweiboLogin getCustomerId:" + thirdReplay.getSignonReplyInfo().getCustomerId());
                         runOnUiThread(() -> ToastUtil.showShortToast("登录成功"));
+                        LoginActivity.finishLoginActivity();
                     } else {
                         LogUtil.e(TAG, "doweiboLogin getCustomerId:" + thirdReplay.getThirdAccessToken());
                         runOnUiThread(() -> ToastUtil.showShortToast("登录失败"));
@@ -97,12 +82,10 @@ public class WeiboEntry extends Activity implements OAuthLoginActivity.AuthListe
                     LogUtil.e(TAG, "weibo appCodeReply error:" + appCodeReply.getReply());
                     runOnUiThread(() -> ToastUtil.showShortToast("应用认证失败"));
                 }
+
             }
         });
         ThreadPoolProxyFactory.getNormal().execute(priorityRunnable);
-
-
-
     }
 
     @Override
@@ -118,6 +101,19 @@ public class WeiboEntry extends Activity implements OAuthLoginActivity.AuthListe
         finish();
     }
 
+
+
+/*        LogUtil.d(TAG, "onSuccess, " + verifyCode);
+        ShowDialog(WAIT_DAILOG);
+        mAccountManager.OAuthLogin(verifyCode, targetID);
+
+        HashMap<String, String> authMap = new HashMap<>(4);
+        authMap.put(Params.THIRD_CALLBACK, "code=" + authResp.code + "&appid=" + BaseConstant.WECHAT_APP_ID);
+        authMap.put(Params.THIRD_PLATFORMID, String.valueOf(LoginActivity.ID_WECHAT));
+        authMap.put(Params.APPCODE, appCodeReply.getCode());
+        authMap.put(Params.DEVICEID, DeviceConfig.getDeviceId(WXEntryActivity.this.getApplicationContext()));
+        LogUtil.i(TAG, "weibo thirdReplay 11111111111");
+        ThirdAccountOauthLoginReplay thirdReplay = HiServiceImpl.obtain().thirdAccountOauthLogin(authMap);*/
 
     /*获取支持的blog列表，这些接口目前没啥用
                 LogUtil.w(TAG, "doWeiboLogin run:" + Thread.currentThread().getName());

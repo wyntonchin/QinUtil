@@ -24,11 +24,13 @@ import java.util.HashMap;
 public class HiServiceImpl implements HiService {
     private static final HiServiceImpl INSTANCE = new HiServiceImpl();
 
-    private static final String TOKEN = "HiServiceToken";
-    private static final String TOKEN_CREATE = "HiServiceTokenCreate";
+    static final String TOKEN = "HiServiceToken";
+    static final String TOKEN_CREATE = "HiServiceTokenCreate";
+    static final String TOKEN_EXPIRE = "HiServiceTokenExpireDuration";
 
-    private static final String TOKEN_EXPIRE = "HiServiceTokenExpire";
-    private static final String TOKEN_REFRESH = "HiServiceTokenRefresh";
+    static final String REFRESH_TOKEN = "HiServiceRefreshToken";
+    static final String REFRESH_TOKEN_CREATE = "HiServiceRefreshTokenExpireTime";
+    static final String REFRESH_TOKEN_EXPIRE = "HiServiceRefreshTokenCreateDuration";
 
     private static final String DEFAULT_WG_HITV_IP = "bas.wg.hismarttv.com";
 
@@ -98,7 +100,7 @@ public class HiServiceImpl implements HiService {
     @Override
     public GetUriReply getUri(String tokenSSO, int blogId, String callBackPath) {
 
-        return getService().getUri(tokenSSO,blogId,callBackPath);
+        return getService().getUri(tokenSSO, blogId, callBackPath);
     }
 
 
@@ -152,7 +154,7 @@ public class HiServiceImpl implements HiService {
     public SignonReplyInfo refreshToken(String appKey) {
         HashMap<String, String> map = new HashMap<>();
         map.put("appKey", appKey);
-        map.put("refreshToken", AccountSpUtil.getString(TOKEN_REFRESH));
+        map.put("refreshToken", AccountSpUtil.getString(REFRESH_TOKEN));
         SignonReplyInfo reply = getService().refreshToken2(map);
         saveToken(reply);
         return reply;
@@ -191,7 +193,7 @@ public class HiServiceImpl implements HiService {
     }
 
     @Override
-    public boolean isTokenExpire() {
+    public boolean isTokenWillExpire() {
         long tokenTimeCreate = AccountSpUtil.getLong(TOKEN_CREATE);
         long tokenTimeExpire = AccountSpUtil.getLong(TOKEN_EXPIRE);
         long diff = System.currentTimeMillis() / 1000 - tokenTimeCreate;
@@ -206,8 +208,8 @@ public class HiServiceImpl implements HiService {
     @Override
     public ThirdAccountOauthLoginReplay thirdAccountOauthLogin(HashMap<String, String> map) {
         ThirdAccountOauthLoginReplay oauthLoginReplay = getService().thirdAccountOauthLogin(map);
-        SignonReplyInfo  reply= oauthLoginReplay.getSignonReplyInfo();
-        if(reply != null){
+        SignonReplyInfo reply = oauthLoginReplay.getSignonReplyInfo();
+        if (reply != null) {
             saveToken(reply);
         }
         return oauthLoginReplay;
@@ -222,15 +224,19 @@ public class HiServiceImpl implements HiService {
 
     private void saveToken(SignonReplyInfo reply) {
         AccountSpUtil.setString(TOKEN, reply.getToken());
-        AccountSpUtil.setString(TOKEN_REFRESH, reply.getRefreshToken());
         AccountSpUtil.setLong(TOKEN_CREATE, reply.getTokenCreateTime());
         AccountSpUtil.setLong(TOKEN_EXPIRE, reply.getTokenExpireTime());
+        AccountSpUtil.setString(REFRESH_TOKEN, reply.getRefreshToken());
+        AccountSpUtil.setLong(REFRESH_TOKEN_CREATE, System.currentTimeMillis() / 1000);
+        AccountSpUtil.setLong(REFRESH_TOKEN_EXPIRE, reply.getRefreshTokenExpiredTime());
     }
 
     private void clearToken() {
         AccountSpUtil.remove(TOKEN);
-        AccountSpUtil.remove(TOKEN_REFRESH);
         AccountSpUtil.remove(TOKEN_CREATE);
         AccountSpUtil.remove(TOKEN_EXPIRE);
+        AccountSpUtil.remove(REFRESH_TOKEN);
+        AccountSpUtil.remove(REFRESH_TOKEN_CREATE);
+        AccountSpUtil.remove(REFRESH_TOKEN_EXPIRE);
     }
 }

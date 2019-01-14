@@ -7,6 +7,6 @@ public interface IRouteLoginService extends IProvider {
 
     void refreshToken(InfoCallback<String> s);
 
-
+    String getToken();
 
 }

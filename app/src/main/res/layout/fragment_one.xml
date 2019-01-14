@@ -50,7 +50,13 @@
             android:id="@+id/test7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="商城"
+            android:text="海信商城"
             android:textColor="@android:color/black"/>
-    </LinearLayout>
+        <Button
+            android:id="@+id/test8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="JD商城"
+            android:textColor="@android:color/black"/>
+</LinearLayout>
 </ScrollView>
