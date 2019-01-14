@@ -44,7 +44,7 @@ public class TokenManager {
                 SignonReplyInfo sigonReply = HiServiceImpl.obtain().refreshToken(BaseConstant.APP_KEY);
                 if (sigonReply != null && sigonReply.getReply() == 0) {
                     callback.onSuccess(sigonReply.getDesc());
-                    LogUtil.e(TAG, "refreshNewToken success:" + sigonReply.getCustomerId());
+                    LogUtil.e(TAG, "refreshNewToken success:customerId =" + sigonReply.getCustomerId());
                 } else if(sigonReply != null ){
                     callback.onError(Integer.valueOf(sigonReply.getError().getErrorCode()), sigonReply.getError().getErrorName());
                     LogUtil.e(TAG, "refreshNewToken errorcode:"+sigonReply.getError().getErrorCode());

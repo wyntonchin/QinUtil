@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/baseColorPageBackground"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/selector_list_item_bg"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
+
+            <TextView
+                android:id="@+id/tx_portrait"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/hi_account_user_portrait"
+                android:textSize="16dp" />
+
+            <com.hisense.hitv.user.CircleImageView
+                android:id="@+id/img_photo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?selectableItemBackgroundBorderless"
+                android:scaleType="centerCrop" />
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/baseColorListItemDivideLine" />
+
+        <RelativeLayout
+            android:id="@+id/account_user_name_rl"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/selector_list_item_bg"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/hi_account_user_name"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/tx_name"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:drawableEnd="@drawable/base_ic_item_next"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:maxLength="25"
+                android:singleLine="true"
+                android:text=""
+                android:textColor="#a9a9a9"
+                android:textSize="13dp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/baseColorListItemDivideLine" />
+
+        <RelativeLayout
+            android:id="@+id/account_user_sex_rl"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/selector_list_item_bg"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/hi_account_user_sex"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/tx_sex"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:drawableEnd="@drawable/base_ic_item_next"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:maxLength="25"
+                android:singleLine="true"
+                android:text="性别"
+                android:textColor="#a9a9a9"
+                android:textSize="13dp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/baseColorListItemDivideLine" />
+
+        <RelativeLayout
+            android:id="@+id/account_user_birth_rl"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/selector_list_item_bg"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/hi_account_user_birthday"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/tx_date"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:drawableEnd="@drawable/base_ic_item_next"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:maxLength="25"
+                android:singleLine="true"
+                android:text="生日"
+                android:textColor="#a9a9a9"
+                android:textSize="13dp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/baseColorListItemDivideLine" />
+
+        <RelativeLayout
+            android:id="@+id/account_user_email_rl"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/selector_list_item_bg"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/hi_account_user_email"
+                android:textSize="16dp" />
+
+            <TextView
+                android:id="@+id/tx_mail"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:drawableEnd="@drawable/base_ic_item_next"
+                android:drawablePadding="8dp"
+                android:gravity="center_vertical"
+                android:maxLength="25"
+                android:singleLine="true"
+                android:text="邮箱"
+                android:textColor="#a9a9a9"
+                android:textSize="13dp" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/baseColorListItemDivideLine" />
+
+        <RelativeLayout
+            android:id="@+id/account_user_modify_pwd"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/selector_list_item_bg"
+            android:paddingEnd="16dp"
+            android:paddingStart="16dp">
+
+            <TextView
+                android:id="@+id/tx_pwd_hint"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/hi_account_modify_pwd"
+                android:textSize="16dp" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentEnd="true"
+                android:scaleType="center"
+                android:src="@drawable/base_ic_item_next" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/baseColorListItemDivideLine" />
+
+        <Button
+            android:id="@+id/account_btn_logout"
+            style="@style/BaseCommonButtonStyle"
+            android:layout_width="240dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="28dp"
+
+            android:textSize="16dp"
+            android:text="@string/hi_account_logout" />
+    </LinearLayout>
+</ScrollView>

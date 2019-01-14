@@ -22,8 +22,8 @@
         android:theme="@style/BaseTheme">
         <activity
             android:name=".LoginActivity"
-            android:launchMode="singleTask"
-            android:label="@string/title_activity_login" />
+            android:label="@string/title_activity_login"
+            android:launchMode="singleTask" />
         <activity
             android:name=".RegisterMobileActivity"
             android:label="@string/hi_account_register" />
@@ -39,14 +39,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".WeiboEntryActivity"
+        <activity
+            android:name=".WeiboEntryActivity"
             android:launchMode="singleTop"
-            android:theme="@style/OAuthLoginDialogStyle"/>
-
+            android:theme="@style/OAuthLoginDialogStyle" />
         <activity
             android:name=".OAuthLoginActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+        <activity android:name="com.hisense.hitv.user.UserInfoActivity"></activity>
     </application>
 
 </manifest>

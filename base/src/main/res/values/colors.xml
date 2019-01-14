@@ -4,4 +4,10 @@
     <color name="baseColorPrimaryDark">#FF1FC9AC</color>
     <color name="baseColorAccent">#4CBAA7</color>
     <color name="baseColorAccentDark">#087C68</color>
+
+
+    <color name="baseColorPageBackground">#efeff4</color> <!--灰白色界面背景色-->
+    <color name="baseColorListItemBg">#ffffff</color>
+    <color name="baseColorListItemPressed">#e9e9e9</color> <!--点击变色-->
+    <color name="baseColorListItemDivideLine">#d9d9d9</color> <!--列表分割线-->
 </resources>

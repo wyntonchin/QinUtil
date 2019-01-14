@@ -15,6 +15,9 @@ import com.android.qin.one.ApkInstallPermissionActivity;
 import com.android.qin.one.RequestPermissionActivity;
 import com.android.qin.util.ToastUtil;
 import com.hisense.hitv.account.LoginActivity;
+import com.hismart.base.router.RouterPath;
+
+import static com.hismart.base.router.RouterPath.SPLAHS_SPLASH;
 
 
 /**
@@ -41,7 +44,12 @@ public class ThreeFragment extends Fragment {
             mContentView.findViewById(R.id.test2).setOnClickListener(v -> {
 
                 //splashactivity
-                ARouter.getInstance().build("/splash/splash").navigation();
+                ARouter.getInstance().build(RouterPath.SPLAHS_SPLASH).navigation();
+            });
+
+            mContentView.findViewById(R.id.test3).setOnClickListener(v -> {
+
+                ARouter.getInstance().build(RouterPath.HIACCOUNT_ACTIVITY_USERINFO).navigation();
             });
         }
 

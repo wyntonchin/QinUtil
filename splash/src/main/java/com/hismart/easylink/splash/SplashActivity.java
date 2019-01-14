@@ -12,7 +12,7 @@ import com.hismart.base.router.IRouteLoginService;
 import com.hismart.base.router.InfoCallback;
 import com.hismart.base.router.RouterPath;
 
-@Route(path = "/splash/splash")
+@Route(path = RouterPath.SPLAHS_SPLASH)
 public class SplashActivity extends AppCompatActivity {
     private static final String TAG = "SplashActivity";
     @Override

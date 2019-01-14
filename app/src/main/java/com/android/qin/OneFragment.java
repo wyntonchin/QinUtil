@@ -78,6 +78,11 @@ public class OneFragment extends Fragment {
                 getActivity().startActivity(new Intent(getActivity(), HisenseMallActivity.class));
 
             });
+
+            mContentView.findViewById(R.id.test8).setOnClickListener(v -> {
+                getActivity().startActivity(new Intent(getActivity(), JdMallActivity.class));
+
+            });
         }
 
 

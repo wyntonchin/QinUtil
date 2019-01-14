@@ -6,6 +6,7 @@ public class RouterPath {
 
     public static final String HIACCOUNT_ACTIVITY_LOGIN = "/hiaccount/activity/login";
 
+    public static final String HIACCOUNT_ACTIVITY_USERINFO = "/hiaccount/activity/userinfo";
 
     public static final String HIACCOUNT_SERVICE_LOGIN = "/hiaccount/service/login";
 }
