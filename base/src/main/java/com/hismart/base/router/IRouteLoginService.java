@@ -9,4 +9,6 @@ public interface IRouteLoginService extends IProvider {
 
     String getToken();
 
+    void refreshUserInfo();
+
 }

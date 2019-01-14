@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.hisense.hitv.account.TokenManager;
+import com.hisense.hitv.account.UserInfoManager;
 import com.hismart.base.router.IRouteLoginService;
 import com.hismart.base.router.InfoCallback;
 import com.hismart.base.router.RouterPath;
@@ -29,6 +30,11 @@ public class LoginServiceImpl implements IRouteLoginService {
     @Override
     public String getToken(){
         return TokenManager.getInstance().getToken();
+    }
+
+    @Override
+    public void refreshUserInfo() {
+        UserInfoManager.getInstance().refreshUserInfo();
     }
 
     @Override
