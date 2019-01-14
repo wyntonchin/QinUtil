@@ -1,0 +1,9 @@
+<resources>
+
+    <style name="BaseCommonButtonStyle">
+        <item name="android:background">@drawable/selector_btn</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:stateListAnimator">@null</item><!-- 去除点击阴影-->
+    </style>
+</resources>
