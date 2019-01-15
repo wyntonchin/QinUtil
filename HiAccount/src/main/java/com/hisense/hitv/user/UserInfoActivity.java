@@ -1,18 +1,54 @@
 package com.hisense.hitv.user;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
+import com.hisense.hitv.account.HiServiceImpl;
 import com.hisense.hitv.account.R;
+import com.hisense.hitv.account.TokenManager;
+import com.hisense.hitv.account.pool.PriorityRunnable;
+import com.hisense.hitv.account.pool.ThreadPoolProxyFactory;
+import com.hisense.hitv.hicloud.bean.account.ReplyInfo;
+import com.hismart.base.BaseConstant;
 import com.hismart.base.BaseToolbarCompatActivity;
+import com.hismart.base.LogUtil;
+import com.hismart.base.ToastUtil;
+import com.hismart.base.dialog.CommonCornerDialog;
 import com.hismart.base.router.RouterPath;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.wj.android.http.RetrofitCallback;
+import com.wj.android.http.XRetrofit;
+
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
 
 @Route(path = RouterPath.HIACCOUNT_ACTIVITY_USERINFO)
 public class UserInfoActivity extends BaseToolbarCompatActivity {
+
+    private static final String TAG = "UserInfoActivity";
+
+    public final static int TYPE_NAME_CODE = 10;
+    public final static int TYPE_EMAIL_CODE = 11;
+    public final static String EDIT_TYPE = "edit_type";
+    public final static String EDIT_CONTENT = "edit_content";
+
     private CircleImageView img_photo;
 
     private RelativeLayout ll_name;
@@ -25,53 +61,156 @@ public class UserInfoActivity extends BaseToolbarCompatActivity {
     private TextView tx_sex;
     private TextView tx_birthday;
     private TextView tx_email;
+    private int gender;
+    private long birthday;
+    private String email;
+    private String nickName;
+    private Bitmap photo;
+    private boolean isPhotoChanged = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setLeftButtonIsBack(true);
         setMiddleTitle("我的资料");
         setContentView(R.layout.activity_user_info);
         findViews();
+
+        gender = UserInfoManager.getInstance().getGender();
     }
 
     private void findViews() {
-        tx_nickname = findViewById(R.id.tx_name);
-        tx_sex = findViewById(R.id.tx_sex);
-        tx_birthday = findViewById(R.id.tx_date);
-        tx_email = findViewById(R.id.tx_mail);
-
-        img_photo = findViewById(R.id.img_photo);
-        //img_photo.setImageBitmap();
         ll_name = findViewById(R.id.account_user_name_rl);
+        ll_name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(UserInfoActivity.this, UserEditActivity.class);
+                it.putExtra(EDIT_TYPE, TYPE_NAME_CODE);
+                it.putExtra(EDIT_CONTENT, UserInfoManager.getInstance().getNickname());
+                startActivityForResult(it, TYPE_NAME_CODE);
+            }
+        });
         ll_sex = findViewById(R.id.account_user_sex_rl);
         ll_date = findViewById(R.id.account_user_birth_rl);
         ll_email = findViewById(R.id.account_user_email_rl);
+        ll_email.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent it = new Intent(UserInfoActivity.this, UserEditActivity.class);
+                it.putExtra(EDIT_TYPE, TYPE_EMAIL_CODE);
+                it.putExtra(EDIT_CONTENT, UserInfoManager.getInstance().getEmail());
+                startActivityForResult(it, TYPE_EMAIL_CODE);
+            }
+        });
+
+
         ll_pwd = findViewById(R.id.account_user_modify_pwd);
 
+
+        img_photo = findViewById(R.id.img_photo);
+        img_photo.setImageBitmap(UserInfoManager.getInstance().getPic());
+        tx_nickname = findViewById(R.id.tx_name);
+        tx_nickname.setText(UserInfoManager.getInstance().getNickname());
+        tx_sex = findViewById(R.id.tx_sex);
+        tx_sex.setText(UserInfoManager.getInstance().getGender() == 0 ?
+                this.getResources().getString(R.string.hi_account_female) : this.getResources().getString(R.string.hi_account_male));
+        tx_birthday = findViewById(R.id.tx_date);
+        tx_birthday.setText(parseBirthdayStr(UserInfoManager.getInstance().getBirthday()));
+        tx_email = findViewById(R.id.tx_mail);
+        tx_email.setText((UserInfoManager.getInstance().getEmail()));
+
         btn_logout = findViewById(R.id.account_btn_logout);
+        btn_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CommonCornerDialog dialog = new CommonCornerDialog(UserInfoActivity.this);
+                dialog.setTitle("");
+                dialog.setMessage(R.string.hi_account_logout);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.setOnClickBottomListener(new CommonCornerDialog.OnClickBottomListener() {
+                    @Override
+                    public void onPositiveClick() {
+                        doLogout();
+                    }
 
-/*        nickName = user.getNickname();
-        tx_nickname.setText(nickName);
+                    @Override
+                    public void onNegativeClick() {
 
-        sex = user.getSex();
-        if (user.getSex() == -1) {
-            tx_sex.setText("");
+                    }
+                }).show();
+            }
+        });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        LogUtil.i(TAG, "onActivityResult requestCode="+requestCode+";resultCode = " + resultCode);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case TYPE_NAME_CODE:
+                    String nickName = data.getStringExtra(EDIT_CONTENT);
+                    tx_nickname.setText(nickName);
+                    break;
+
+                case TYPE_EMAIL_CODE:
+                    String email = data.getStringExtra(EDIT_CONTENT);
+                    tx_email.setText(email);
+                    break;
+                    default:
+                        break;
+            }
+        }
+    }
+
+    @Override
+    protected void pressToolbarNavigation() {
+        UserInfoManager.getInstance().uploadUserPhoto();
+    }
+
+    private boolean infoHasChanged(){
+        return !tx_nickname.getText().equals(UserInfoManager.getInstance().getNickname())
+                || UserInfoManager.getInstance().getGender() != gender
+                || UserInfoManager.getInstance().getBirthday() != birthday
+                || !tx_email.getText().equals(UserInfoManager.getInstance().getEmail())
+                || !isPhotoChanged;
+    }
+
+    private void doLogout() {
+        showProgressDialog(false);
+        PriorityRunnable priorityRunnable = new PriorityRunnable(PriorityRunnable.Priority.NORMAL, new Runnable() {
+            @Override
+            public void run() {
+                LogUtil.w(TAG, "btn_login:" + Thread.currentThread().getName());
+                //认证账号
+                ReplyInfo replyInfo = HiServiceImpl.obtain().logout(TokenManager.getInstance().getToken(), HiServiceImpl.obtain().getDeviceId(UserInfoActivity.this));
+                if (replyInfo != null && replyInfo.getReply() == 0) {
+                    LogUtil.e(TAG, "doLogout success replyInfo:" + replyInfo.getReply());
+                    runOnUiThread(() -> ToastUtil.showShortToast("登出成功"));
+                } else {
+                    LogUtil.e(TAG, "doLogout fail replyInfo:" + replyInfo.getReply());
+                    runOnUiThread(() -> ToastUtil.showShortToast("登出失败"));
+                }
+                runOnUiThread(() -> dismissProgressDialog());
+            }
+        });
+        ThreadPoolProxyFactory.getNormal().execute(priorityRunnable);
+    }
+
+    private String parseBirthdayStr(Long curValue) {
+        int year, month, day;
+        if (curValue != 0) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(new Date(curValue * 1000));
+            year = calendar.get(Calendar.YEAR);
+            month = calendar.get(Calendar.MONTH) + 1;
+            day = calendar.get(Calendar.DAY_OF_MONTH);
         } else {
-            LogUtil.d(TAG, "User:" + user.getSex());
-            tx_sex.setText(user.getSex() == 0 ? this.getResources().getString(R.string.female)
-                    : this.getResources().getString(R.string.male));
+            year = 1970;
+            month = 1;
+            day = 1;
         }
 
-
-        tx_birthday.setText(getBirthdayStr(user.getBirthday()));
-        LogUtil.d(TAG, "Set birthday:" + getBirthdayStr(user.getBirthday()));
-
-        //tx_email.setMovementMethod(new ScrollingMovementMethod());
-        email = user.getEmail();
-        tx_email.setText(email);
-        LogUtil.d(TAG, "Set email:" + email);
-
-        img_photo.setImageBitmap(user.getPhoto());*/
+        return year + "-" + month + "-" + day;
     }
 }

@@ -32,7 +32,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     //Retrofit
-    api 'com.squareup.retrofit2:retrofit:2.4.0'
+    api 'com.squareup.retrofit2:retrofit:2.3.0'
     //okhttp-logging-interceptor
     implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
     //GSON

@@ -47,7 +47,8 @@
             android:name=".OAuthLoginActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
-        <activity android:name="com.hisense.hitv.user.UserInfoActivity"></activity>
+        <activity android:name="com.hisense.hitv.user.UserInfoActivity" />
+        <activity android:name="com.hisense.hitv.user.UserEditActivity"></activity>
     </application>
 
 </manifest>

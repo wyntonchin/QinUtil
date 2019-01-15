@@ -5,7 +5,7 @@ import android.text.TextUtils;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.hisense.hitv.account.TokenManager;
-import com.hisense.hitv.account.UserInfoManager;
+import com.hisense.hitv.user.UserInfoManager;
 import com.hismart.base.router.IRouteLoginService;
 import com.hismart.base.router.InfoCallback;
 import com.hismart.base.router.RouterPath;
