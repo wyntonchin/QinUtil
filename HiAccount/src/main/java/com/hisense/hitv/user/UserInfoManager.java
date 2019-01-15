@@ -28,10 +28,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -198,21 +196,22 @@ public class UserInfoManager {
 
 
     public void uploadUserPhoto() {
-        //http://api.hismarttv.com/cam/user/upload_profile
-        String getAccessUrl = BaseConstant.PHOTO_URI + "/cam/user/upload_profile";
-        Map<String, String> params = new HashMap<>(4);
-        params.put("format", "1");
-        params.put("languageId", "0");
-        params.put("profileName", "photo");
-        params.put("accessToken", TokenManager.getInstance().getToken());
+        String getAccessUrl = BaseConstant.ACCOUNT_URI + "/cam/user/upload_profile";
         List<MultipartBody.Part> parts = new ArrayList<>();
-
+        MultipartBody.Part part = MultipartBody.Part.createFormData("format", "1");
+        parts.add(part);
+        part = MultipartBody.Part.createFormData("languageId", "0");
+        parts.add(part);
+        part = MultipartBody.Part.createFormData("profileName", "photo");
+        parts.add(part);
+        part = MultipartBody.Part.createFormData("accessToken", TokenManager.getInstance().getToken());
+        parts.add(part);
+        //最后注入图片路径
         File file = new File(USER_PIC_PATH);
         RequestBody requestFile =  RequestBody.create(MultipartBody.FORM, file);
-        MultipartBody.Part part = MultipartBody.Part.createFormData("pic",file.getName(),requestFile);
-
-        parts.add(part);
-        XRetrofit.upload(getAccessUrl, params, parts, new RetrofitCallback() {
+        MultipartBody.Part part5 = MultipartBody.Part.createFormData("pic",file.getName(),requestFile);
+        parts.add(part5);
+        XRetrofit.upload(getAccessUrl, new HashMap<>(), parts, new RetrofitCallback() {
             @Override
             public void onResponse(Call<ResponseBody> call, ResponseBody responseBody) {
                 try {

@@ -32,7 +32,7 @@ public class SplashActivity extends AppCompatActivity {
             runOnUiThread(() -> ToastUtil.showShortToast("登录状态正常"));
             //ARouter.getInstance().build(RouterPath.HIACCOUNT_ACTIVITY_LOGIN).navigation();
             //finish();
-            loginService.refreshUserInfo();
+            //loginService.refreshUserInfo();
         }else {
             if(AppUtil.isNetworkConnected()){
                 loginService.refreshToken(new InfoCallback<String>() {

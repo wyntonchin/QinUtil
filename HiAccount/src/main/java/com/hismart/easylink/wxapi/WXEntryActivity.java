@@ -41,6 +41,8 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 
     // IWXAPI 是第三方app和微信通信的openapi接口
     private IWXAPI api;
+    public static String WECHAT_APP_ID = "wxd4385c94844efdfa";//"wx20eeb8537bb7b512";//"wxd930ea5d5a258f4f";
+
     ExecutorService mExecutorService = new PriorityExecutor(4, false);
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,7 +50,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
         setContentView(R.layout.activity_wx_entry);
 
         // 通过WXAPIFactory工厂，获取IWXAPI的实例
-        api = WXAPIFactory.createWXAPI(this, BaseConstant.WECHAT_APP_ID, false);
+        api = WXAPIFactory.createWXAPI(this, WECHAT_APP_ID, false);
 
         //注意：
         //第三方开发者如果使用透明界面来实现WXEntryActivity，需要判断handleIntent的返回值，
@@ -148,7 +150,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
                     LogUtil.i(TAG, "weixin appCodeReply :" + appCodeReply.getReply());
                     SendAuth.Resp authResp = (SendAuth.Resp) resp;
                     HashMap<String, String> authMap = new HashMap<>(4);
-                    authMap.put(Params.THIRD_CALLBACK, "code=" + authResp.code + "&appid=" + BaseConstant.WECHAT_APP_ID);
+                    authMap.put(Params.THIRD_CALLBACK, "code=" + authResp.code + "&appid=" + WECHAT_APP_ID);
                     authMap.put(Params.THIRD_PLATFORMID, String.valueOf(LoginActivity.ID_WECHAT));
                     authMap.put(Params.APPCODE, appCodeReply.getCode());
                     authMap.put(Params.DEVICEID, DeviceConfig.getDeviceId(WXEntryActivity.this.getApplicationContext()));

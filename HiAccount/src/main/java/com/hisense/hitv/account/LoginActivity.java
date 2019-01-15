@@ -21,6 +21,7 @@ import com.hismart.base.BaseToolbarCompatActivity;
 import com.hismart.base.LogUtil;
 import com.hismart.base.router.RouterPath;
 import com.hismart.base.ToastUtil;
+import com.hismart.easylink.wxapi.WXEntryActivity;
 import com.tencent.mm.opensdk.modelmsg.SendAuth;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
@@ -157,13 +158,13 @@ public class LoginActivity extends BaseToolbarCompatActivity {
     void doWeChatEntry() {
         LogUtil.w(TAG, "doWeChatLogin");
         // 通过WXAPIFactory工厂，获取IWXAPI的实例
-        api = WXAPIFactory.createWXAPI(this, BaseConstant.WECHAT_APP_ID, true);
+        api = WXAPIFactory.createWXAPI(this, WXEntryActivity.WECHAT_APP_ID, true);
         if (!api.isWXAppInstalled()) {
             ToastUtil.showShortToast("请先安装微信客户端");
             return;
         }
-        // 将应用的appId注册到微信
-        if (api.registerApp(BaseConstant.WECHAT_APP_ID)) {
+        // 将应用的appId注册到微信,如果成功,微信SDK内部会自动跳转
+        if (api.registerApp(WXEntryActivity.WECHAT_APP_ID)) {
             LogUtil.i(TAG, "Register app to wechat successfully");
         } else {
             ToastUtil.showShortToast(R.string.hi_account_wechat_register_app_failed);

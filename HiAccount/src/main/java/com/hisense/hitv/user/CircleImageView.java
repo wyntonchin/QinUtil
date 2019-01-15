@@ -73,6 +73,8 @@ public class CircleImageView extends AppCompatImageView {
      */
     private BitmapShader initBitmapShader(BitmapDrawable drawable) {
         Bitmap bitmap = drawable.getBitmap();
+        if(bitmap == null)
+            return null;
         BitmapShader bitmapShader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
         float scale = Math.max(width / bitmap.getWidth(), height / bitmap.getHeight());
         matrix.setScale(scale, scale);//将图片宽高等比例缩放，避免拉伸

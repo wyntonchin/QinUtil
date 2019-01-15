@@ -7,7 +7,6 @@ public interface BaseConstant {
 
     String IP = "bas.wg.hismarttv.com";
 
-    String PHOTO_URI = "http://api.hismarttv.com";
+    String ACCOUNT_URI = "http://api.hismarttv.com";
 
-    String WECHAT_APP_ID = "wxd4385c94844efdfa";//"wx20eeb8537bb7b512";//"wxd930ea5d5a258f4f";
 }
