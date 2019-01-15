@@ -29,7 +29,7 @@ public class SplashActivity extends AppCompatActivity {
         IRouteLoginService loginService =   (IRouteLoginService) ARouter.getInstance().build(RouterPath.HIACCOUNT_SERVICE_LOGIN).navigation();
         LogUtil.i(TAG,"onCreate old token="+loginService.getToken());
         if(loginService.isLogin()){
-            runOnUiThread(() -> ToastUtil.showShortToast("登录正常"));
+            runOnUiThread(() -> ToastUtil.showShortToast("登录状态正常"));
             //ARouter.getInstance().build(RouterPath.HIACCOUNT_ACTIVITY_LOGIN).navigation();
             //finish();
         }else {
