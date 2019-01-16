@@ -18,7 +18,9 @@ public abstract class GsonCallback<T> extends RetrofitCallback {
 
     private WeakReference<BaseView> mBaseView;
     private int mRequestId;
-
+    public GsonCallback() {
+        this(null, 0);
+    }
     public GsonCallback(BaseView baseView) {
         this(baseView, 0);
     }
@@ -40,14 +42,14 @@ public abstract class GsonCallback<T> extends RetrofitCallback {
 
     @Override
     public void onStart(Call<ResponseBody> call) {
-        if(checkNull()) return;
-        mBaseView.get().start(mRequestId);
+        if(!checkNull()){
+            mBaseView.get().start(mRequestId);
+        }
 
     }
 
     @Override
     public void onResponse(Call<ResponseBody> call, ResponseBody responseBody) {
-        if(checkNull()) return;
         try{
             T bean = new Gson().fromJson(convertResponse(responseBody.string()), getType(this));
             onSuccess(bean, mBaseView.get());
@@ -58,15 +60,17 @@ public abstract class GsonCallback<T> extends RetrofitCallback {
 
     @Override
     public void onFailure(Call<ResponseBody> call, Throwable t) {
-        if(checkNull()) return;
-        mBaseView.get().error(t,mRequestId);
+        if(!checkNull()) {
+            mBaseView.get().error(t,mRequestId);
+        }
     }
 
     @Override
     public void onFinish(Call<ResponseBody> call) {
         super.onFinish(call);
-        if(checkNull()) return;
-        mBaseView.get().end(mRequestId);
+        if(!checkNull()){
+            mBaseView.get().end(mRequestId);
+        }
     }
 
     private static <T> Type getType(T t) {

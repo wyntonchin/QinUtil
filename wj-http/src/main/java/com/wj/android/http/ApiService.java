@@ -14,6 +14,7 @@ import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.HeaderMap;
+import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
@@ -44,6 +45,12 @@ public interface ApiService {
 
     @POST
     Call<ResponseBody> postBody(@Url String url, @Body RequestBody requestBody);
+
+
+    //qwd
+    @Headers({"Content-type:application/json;charset=UTF-8"})
+    @POST
+    Call<ResponseBody> postBodyWithHeader(@Url String url, @Body RequestBody requestBody,@QueryMap Map<String,String> params);
 
     @FormUrlEncoded
     @POST

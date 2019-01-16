@@ -12,22 +12,31 @@ import com.hisense.hitv.account.TokenManager;
 import com.hisense.hitv.account.pool.PriorityRunnable;
 import com.hisense.hitv.account.pool.ThreadPoolProxyFactory;
 import com.hisense.hitv.hicloud.bean.account.CustomerInfo;
+import com.hisense.hitv.user.retrofit.ApiException;
+import com.hisense.hitv.user.retrofit.BaseInfo;
+import com.hisense.hitv.user.retrofit.ErrorBean;
+import com.hisense.hitv.user.retrofit.JuGsonCallBack;
 import com.hismart.base.AppUtil;
 import com.hismart.base.BaseConstant;
 import com.hismart.base.LogUtil;
+
+import com.hismart.base.router.InfoCallback;
+import com.wj.android.http.BaseView;
 import com.wj.android.http.RetrofitCallback;
 import com.wj.android.http.XRetrofit;
-/*
-import com.wj.android.http.RetrofitCallback;
-import com.wj.android.http.XRetrofit;
-*/
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import okhttp3.MultipartBody;
@@ -70,7 +79,7 @@ public class UserInfoManager {
                                 .asBitmap()
                                 .into(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
                                 .get();
-                    } catch (InterruptedException|ExecutionException e) {
+                    } catch (InterruptedException | ExecutionException e) {
                         e.printStackTrace();
                     }
 
@@ -150,7 +159,7 @@ public class UserInfoManager {
     }
 
     String getNickname() {
-        return  AccountSpUtil.getString(USER_NICKNAME);
+        return AccountSpUtil.getString(USER_NICKNAME);
     }
 
     int getGender() {
@@ -158,8 +167,9 @@ public class UserInfoManager {
     }
 
     void setPic(Bitmap bitmap) {
-        saveUserPicToSDCard(bitmap,USER_PIC_DIR,USER_PIC_NAME);
+        BitmapUtil.saveUserPicToSDCard(bitmap, USER_PIC_DIR, USER_PIC_NAME);
     }
+
     Bitmap getPic() {
         return BitmapFactory.decodeFile(USER_PIC_PATH);
     }
@@ -168,34 +178,8 @@ public class UserInfoManager {
     private static final String USER_PIC_NAME = "photo.png";
     private static final String USER_PIC_PATH = USER_PIC_DIR + USER_PIC_NAME;
 
-    private static void saveUserPicToSDCard(Bitmap bitmap, String dir, String imagename) {
-
-        File path = new File(dir);
-        if (!path.exists()) {
-            path.mkdirs();
-        }
-        File file = new File(dir + imagename);
-
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos);
-            fos.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-
-    public void uploadUserPhoto() {
+    //{"response":{"resultCode":0}}
+    private void postUserPhoto(InfoCallback infoCallback, String path) {
         String getAccessUrl = BaseConstant.ACCOUNT_URI + "/cam/user/upload_profile";
         List<MultipartBody.Part> parts = new ArrayList<>();
         MultipartBody.Part part = MultipartBody.Part.createFormData("format", "1");
@@ -207,26 +191,174 @@ public class UserInfoManager {
         part = MultipartBody.Part.createFormData("accessToken", TokenManager.getInstance().getToken());
         parts.add(part);
         //最后注入图片路径
-        File file = new File(USER_PIC_PATH);
-        RequestBody requestFile =  RequestBody.create(MultipartBody.FORM, file);
-        MultipartBody.Part part5 = MultipartBody.Part.createFormData("pic",file.getName(),requestFile);
+        File file = new File(path);
+        RequestBody requestFile = RequestBody.create(MultipartBody.FORM, file);
+        MultipartBody.Part part5 = MultipartBody.Part.createFormData("pic", file.getName(), requestFile);
         parts.add(part5);
-        XRetrofit.upload(getAccessUrl, new HashMap<>(), parts, new RetrofitCallback() {
+        XRetrofit.upload(getAccessUrl, new HashMap<>(0), parts, new JuGsonCallBack<BaseInfo<ErrorBean>>() {
+            @Override
+            protected void onSuccess(BaseInfo<ErrorBean> response, BaseView baseView) {
+                LogUtil.e(TAG, "upload onSuccess =" + response.getResponse().getResultCode());
+                infoCallback.onSuccess(response.getResponse().getResultCode());
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                LogUtil.e(TAG, "upload onFailure =" + t.getMessage());
+                ApiException apiException = (ApiException) t;
+                infoCallback.onError(apiException.getErrorCode(), apiException.getMessage());
+            }
+        });
+    }
+
+
+    public void uploadUserPhoto(InfoCallback infoCallback) {
+        PriorityRunnable priorityRunnable = new PriorityRunnable(PriorityRunnable.Priority.NORMAL, new Runnable() {
+            @Override
+            public void run() {
+                LogUtil.w(TAG, "uploadUserPhoto:" + Thread.currentThread().getName());
+                getPhotoPolicyAndUpload(infoCallback);
+            }
+        });
+        ThreadPoolProxyFactory.getNormal().execute(priorityRunnable);
+
+    }
+
+    private void getPhotoPolicyAndUpload(InfoCallback infoCallback) {
+        String policyUrl = BaseConstant.ACCOUNT_URI + "/cam/user/get_picturetype";
+        Map<String, String> map = new HashMap<>(6);
+        map.put("accessToken", TokenManager.getInstance().getToken());
+        map.put("version", "2.0");
+        map.put("sign", "");
+        map.put("timeStamp", String.valueOf(System.currentTimeMillis() / 1000));
+        map.put("languageId", "0");
+        map.put("sourceType", "1");
+
+        XRetrofit.get(policyUrl, map, new RetrofitCallback() {
             @Override
             public void onResponse(Call<ResponseBody> call, ResponseBody responseBody) {
                 try {
                     String result = responseBody.string();
-                    Log.e(TAG, "upload onResponse ="+result);
+                    Log.e(TAG, "httpGetPhotoPolicy onResponse =" + result);
+                    PhotoPolicy photoPolicy = parsePolicyXml(result);
+                    if (photoPolicy.checkMode == 2) {
+                        LogUtil.d(TAG, "Ignore photo policy");
+                    } else {
+                        LogUtil.d(TAG, " photo policy handle Scale");
+                        BitmapUtil.saveBitmapToSDCard(getPic(), USER_PIC_DIR, USER_PIC_NAME,
+                                photoPolicy.fileFormat, photoPolicy.pictureLength,
+                                photoPolicy.pictureWidth, photoPolicy.pictureSize, photoPolicy.checkMode);
+                    }
+                    postUserPhoto(infoCallback, USER_PIC_DIR + USER_PIC_NAME);
+
                 } catch (IOException e) {
                     e.printStackTrace();
+                    infoCallback.onError(888888, e.getMessage());
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e(TAG, "upload onFailure ="+t.getMessage());
+                infoCallback.onError(888888, t.getMessage());
+                Log.e(TAG, "httpGetPhotoPolicy onFailure =" + t.getMessage());
             }
         });
     }
 
+    private class PhotoPolicy {
+        int pictureLength;
+        int pictureWidth;
+        int pictureSize;
+        String fileFormat;
+        int checkMode;
+        int resultCode;
+    }
+
+
+    private PhotoPolicy parsePolicyXml(String xmlStr) {
+        PhotoPolicy policy = null;
+        LogUtil.d(TAG, "getPolicy is xmlStr:" + xmlStr);
+
+        try {
+            policy = new PhotoPolicy();
+            XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
+            parser.setInput(new StringReader(xmlStr));
+
+            int type = parser.getEventType();
+            while (type != XmlPullParser.END_DOCUMENT) {
+                if (type == XmlPullParser.START_TAG) {
+                    String name = parser.getName();
+
+                    if (name.equalsIgnoreCase("pictureSize")) {
+                        policy.pictureSize = Integer.parseInt(parser.nextText());
+                        LogUtil.d(TAG, "Limitation of photo size:" + policy.pictureSize);
+                    }
+
+                    if (name.equalsIgnoreCase("pictureLength")) {
+                        policy.pictureLength = Integer.parseInt(parser.nextText());
+                        LogUtil.d(TAG, "Limitation of photo length:" + policy.pictureLength);
+                    }
+
+                    if (name.equalsIgnoreCase("pictureWidth")) {
+                        policy.pictureWidth = Integer.parseInt(parser.nextText());
+                        LogUtil.d(TAG, "Limitation of photo width:" + policy.pictureWidth);
+                    }
+
+                    if (name.equalsIgnoreCase("fileFormat")) {
+                        policy.fileFormat = parser.nextText();
+                        LogUtil.d(TAG, "Limitation of photo fileFormat:" + policy.fileFormat);
+                    }
+
+                    if (name.equalsIgnoreCase("checkMode")) {
+                        policy.checkMode = Integer.parseInt(parser.nextText());
+                        LogUtil.d(TAG, "CheckMode" + policy.checkMode);
+                    }
+                }
+
+                type = parser.next();
+            }
+
+        } catch (IOException | XmlPullParserException e) {
+            policy = null;
+            e.printStackTrace();
+        }
+        return policy;
+    }
+
+
+/*    void postUserInfo(String nickName, String mobilePhone, int gender, long birthday, String address, String email){
+        HashMap<String, String> map = new HashMap<String, String>();
+        map.put("nickName", nickName);
+        map.put("mobilePhone", mobilePhone);
+        map.put("sex", String.valueOf(gender));
+        map.put("birthday", String.valueOf(birthday));
+        map.put("address", address);
+        map.put("email",email);
+        HiServiceImpl.obtain().updateCustomerInfo(TokenManager.getInstance().getToken(), map);
+    }*/
+
+
+
 }
+
+
+
+    /*
+    * <?xml version="1.0" encoding="utf-8"?>
+
+<response>
+  <resultCode>0</resultCode>
+  <desc/>
+  <pictureSize>100</pictureSize>
+  <pictureLength>132</pictureLength>
+  <pictureWidth>165</pictureWidth>
+  <fileFormat>jpg,gif,png</fileFormat>
+  <tvMode>0</tvMode>
+  <checkMode>2</checkMode>
+  <owner>I</owner>
+  <displayFlag>1</displayFlag>
+  <colorBit>24</colorBit>
+  <signatureServer>k4l/ofPsgUOlGM5Zw9HlGdEMVurN8eWA3ZSKaCZR7xR+5XC8/b0ko2jCdl0xtPyPGWdD3kULt13JL90q6sR2Bw==</signatureServer>
+</response>
+
+    * */

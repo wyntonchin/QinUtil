@@ -1,8 +1,9 @@
 package com.hisense.hitv.user;
 
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -15,29 +16,19 @@ import com.hisense.hitv.account.TokenManager;
 import com.hisense.hitv.account.pool.PriorityRunnable;
 import com.hisense.hitv.account.pool.ThreadPoolProxyFactory;
 import com.hisense.hitv.hicloud.bean.account.ReplyInfo;
-import com.hismart.base.BaseConstant;
 import com.hismart.base.BaseToolbarCompatActivity;
 import com.hismart.base.LogUtil;
 import com.hismart.base.ToastUtil;
 import com.hismart.base.dialog.CommonCornerDialog;
+import com.hismart.base.router.InfoCallback;
 import com.hismart.base.router.RouterPath;
 
-import java.io.File;
-import java.util.ArrayList;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.wj.android.http.RetrofitCallback;
-import com.wj.android.http.XRetrofit;
-
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Call;
+import java.util.TimeZone;
 
 @Route(path = RouterPath.HIACCOUNT_ACTIVITY_USERINFO)
 public class UserInfoActivity extends BaseToolbarCompatActivity {
@@ -62,10 +53,10 @@ public class UserInfoActivity extends BaseToolbarCompatActivity {
     private TextView tx_birthday;
     private TextView tx_email;
     private int gender;
-    private long birthday;
+/*    private long birthday;
     private String email;
-    private String nickName;
-    private Bitmap photo;
+    private String nickName;*/
+    //private Bitmap photo;
     private boolean isPhotoChanged = false;
 
 
@@ -77,7 +68,6 @@ public class UserInfoActivity extends BaseToolbarCompatActivity {
         setContentView(R.layout.activity_user_info);
         findViews();
 
-        gender = UserInfoManager.getInstance().getGender();
     }
 
     private void findViews() {
@@ -92,6 +82,12 @@ public class UserInfoActivity extends BaseToolbarCompatActivity {
             }
         });
         ll_sex = findViewById(R.id.account_user_sex_rl);
+        ll_sex.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSexChooseDialog();
+            }
+        });
         ll_date = findViewById(R.id.account_user_birth_rl);
         ll_email = findViewById(R.id.account_user_email_rl);
         ll_email.setOnClickListener(new View.OnClickListener() {
@@ -113,10 +109,13 @@ public class UserInfoActivity extends BaseToolbarCompatActivity {
         tx_nickname = findViewById(R.id.tx_name);
         tx_nickname.setText(UserInfoManager.getInstance().getNickname());
         tx_sex = findViewById(R.id.tx_sex);
+
         tx_sex.setText(UserInfoManager.getInstance().getGender() == 0 ?
                 this.getResources().getString(R.string.hi_account_female) : this.getResources().getString(R.string.hi_account_male));
+        gender = UserInfoManager.getInstance().getGender();
+
         tx_birthday = findViewById(R.id.tx_date);
-        tx_birthday.setText(parseBirthdayStr(UserInfoManager.getInstance().getBirthday()));
+        tx_birthday.setText(getBirthdayStr(UserInfoManager.getInstance().getBirthday()));
         tx_email = findViewById(R.id.tx_mail);
         tx_email.setText((UserInfoManager.getInstance().getEmail()));
 
@@ -165,15 +164,85 @@ public class UserInfoActivity extends BaseToolbarCompatActivity {
 
     @Override
     protected void pressToolbarNavigation() {
-        UserInfoManager.getInstance().uploadUserPhoto();
+        handleBack();
+        finish();
     }
 
-    private boolean infoHasChanged(){
-        return !tx_nickname.getText().equals(UserInfoManager.getInstance().getNickname())
-                || UserInfoManager.getInstance().getGender() != gender
-                || UserInfoManager.getInstance().getBirthday() != birthday
-                || !tx_email.getText().equals(UserInfoManager.getInstance().getEmail())
-                || !isPhotoChanged;
+    @Override
+    public void onBackPressed() {
+        handleBack();
+        finish();
+    }
+
+    private void showSexChooseDialog() {
+        String[] sexArry = new String[]{ this.getResources().getString(R.string.hi_account_male),this.getString(R.string.hi_account_female)};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.hi_account_gender);
+        builder.setSingleChoiceItems(sexArry, gender == 0 ? 1:0, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {// which是被选中的位置
+                gender = which == 0 ? 1 : 0;
+                if(gender == 0){
+                    //女
+                    tx_sex.setText(sexArry[1]);
+                }else {
+                    tx_sex.setText(sexArry[0]);
+                }
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
+    private void handleBack(){
+        if(saveUserInfoIfChanged()){
+            doPostUserInfo();
+        }
+
+        if(isPhotoChanged){
+            UserInfoManager.getInstance().uploadUserPhoto(new InfoCallback() {
+                @Override
+                public void onSuccess(Object info) {
+
+                }
+
+                @Override
+                public void onError(int code, String message) {
+
+                }
+            });
+        }
+    }
+
+
+    private void doPostUserInfo(){
+        showProgressDialog(false);
+        PriorityRunnable priorityRunnable = new PriorityRunnable(PriorityRunnable.Priority.NORMAL, new Runnable() {
+            @Override
+            public void run() {
+                LogUtil.w(TAG, "doPostUserInfo:" + Thread.currentThread().getName());
+                HashMap<String, String> map = new HashMap<>();
+                map.put("nickName", UserInfoManager.getInstance().getNickname());
+                map.put("mobilePhone", UserInfoManager.getInstance().getMobile());
+                map.put("sex", String.valueOf(UserInfoManager.getInstance().getGender()));
+                map.put("birthday", String.valueOf(UserInfoManager.getInstance().getBirthday()));
+                map.put("address", UserInfoManager.getInstance().getAddress());
+                map.put("email",UserInfoManager.getInstance().getEmail());
+
+                ReplyInfo replyInfo = HiServiceImpl.obtain().updateCustomerInfo(TokenManager.getInstance().getToken(), map);
+                if (replyInfo != null && replyInfo.getReply() == 0) {
+                    LogUtil.e(TAG, "doPostUserInfo success replyInfo:" + replyInfo.getReply());
+                    runOnUiThread(() -> ToastUtil.showShortToast("更新成功"));
+                } else {
+                    LogUtil.e(TAG, "doPostUserInfo fail");
+                    runOnUiThread(() -> ToastUtil.showShortToast("更新失败"));
+                }
+                runOnUiThread(() -> dismissProgressDialog());
+            }
+        });
+        ThreadPoolProxyFactory.getNormal().execute(priorityRunnable);
+
     }
 
     private void doLogout() {
@@ -188,7 +257,7 @@ public class UserInfoActivity extends BaseToolbarCompatActivity {
                     LogUtil.e(TAG, "doLogout success replyInfo:" + replyInfo.getReply());
                     runOnUiThread(() -> ToastUtil.showShortToast("登出成功"));
                 } else {
-                    LogUtil.e(TAG, "doLogout fail replyInfo:" + replyInfo.getReply());
+                    LogUtil.e(TAG, "doLogout fail");
                     runOnUiThread(() -> ToastUtil.showShortToast("登出失败"));
                 }
                 runOnUiThread(() -> dismissProgressDialog());
@@ -197,7 +266,54 @@ public class UserInfoActivity extends BaseToolbarCompatActivity {
         ThreadPoolProxyFactory.getNormal().execute(priorityRunnable);
     }
 
-    private String parseBirthdayStr(Long curValue) {
+    private boolean saveUserInfoIfChanged() {
+        UserInfoManager user = UserInfoManager.getInstance();
+        if (!tx_nickname.getText().toString().equalsIgnoreCase(user.getNickname())) {
+            LogUtil.d(TAG, "NickName differ");
+            user.setNickname(tx_nickname.getText().toString());
+            return true;
+        }
+
+        if (user.getGender() != gender) {
+            LogUtil.d(TAG, "Sex differ");
+            user.setGender(user.getGender());
+            return true;
+        }
+
+        if (user.getBirthday() != parseBirthday(tx_birthday.getText().toString())) {
+            LogUtil.d(TAG, "Birthday differ");
+            user.setBirthday(parseBirthday(tx_birthday.getText().toString()));
+            return true;
+        }
+
+        if (!tx_email.getText().toString().equalsIgnoreCase(user.getEmail())) {
+            LogUtil.d(TAG, "Email differ");
+            user.setEmail(tx_email.getText().toString());
+            return true;
+        }
+        return false;
+    }
+
+    private long parseBirthday(String time) {
+        long birthday = 0;
+
+        SimpleDateFormat sDate = new SimpleDateFormat("yyyy-MM-dd");
+        sDate.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+        String[] value = time.split("-");
+        try {
+            Date date = sDate.parse(value[0] + "-" + value[1] + "-" + value[2]);
+            birthday = date.getTime() / 1000; // used for store user
+            // info locally
+            LogUtil.d(TAG, "Birthday:" + birthday);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return birthday;
+    }
+
+    private String getBirthdayStr(Long curValue) {
         int year, month, day;
         if (curValue != 0) {
             Calendar calendar = Calendar.getInstance();
@@ -213,4 +329,5 @@ public class UserInfoActivity extends BaseToolbarCompatActivity {
 
         return year + "-" + month + "-" + day;
     }
+
 }

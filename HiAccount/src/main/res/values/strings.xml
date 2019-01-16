@@ -36,8 +36,13 @@
     <string name="hi_account_user_email">"电子邮箱"</string>
     <string name="hi_account_modify_pwd">"修改登录密码"</string>
     <string name="hi_account_logout">"退出登录"</string>
+    <string name="hi_account_gender">"性别"</string>
     <string name="hi_account_male">"男"</string>
     <string name="hi_account_female">"女"</string>
+
+    <string name="hi_account_bir_day">"日"</string>
+    <string name="hi_account_bir_month">"月"</string>
+    <string name="hi_account_bir_year">"年"</string>
 
     <string name="hi_account_nick_name_policy">您的昵称只能包含汉字、字母、数字哦</string>
 

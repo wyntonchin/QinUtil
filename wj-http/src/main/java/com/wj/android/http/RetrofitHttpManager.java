@@ -1,5 +1,7 @@
 package com.wj.android.http;
 
+import android.util.Log;
+
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +20,7 @@ import retrofit2.Retrofit;
 
 public class RetrofitHttpManager {
 
+    private static final String TAG = "RetrofitHttpManager";
     private volatile static RetrofitHttpManager sInstance;
     private ApiService mApiService;
 
@@ -39,6 +42,8 @@ public class RetrofitHttpManager {
     private void initRetrofit() {
         Retrofit.Builder builder = new Retrofit.Builder();
         builder.baseUrl(GlobalConfig.DEFAULT_BASE_URL);
+        Log.e(TAG,"initRetrofit111 ");
+        XRetrofit.init();
         if (XRetrofit.getGlobalConfig() != null) {
             builder.client(XRetrofit.getGlobalConfig().getOkHttpClientBuilder().build());
         }
@@ -47,6 +52,7 @@ public class RetrofitHttpManager {
 
     private void execute(Call<ResponseBody> call, final RetrofitCallback retrofitCallback){
         retrofitCallback.onStart(call);
+        Log.i(TAG,"execute call.request :"+call.request());
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -70,6 +76,7 @@ public class RetrofitHttpManager {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e(TAG,"onFailure t :"+t.getMessage());
                 retrofitCallback.onFailure(call, t);
                 retrofitCallback.onFinish(call);
             }
