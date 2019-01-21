@@ -1,6 +1,7 @@
 package com.android.qin;
 
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,6 +37,12 @@ public class TwoFragment extends Fragment {
             mContentView = inflater.inflate(R.layout.fragment_two, container, false);
             mContentView.findViewById(R.id.test1).setOnClickListener(v -> {
                 testThreadPool();
+            });
+
+            mContentView.findViewById(R.id.test2).setOnClickListener(v -> {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("23423").setMessage("2w3rrrrrrrrrasdfasfasfasfaf");
+                builder.show();
             });
         }
 
