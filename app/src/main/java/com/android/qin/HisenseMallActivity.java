@@ -2,7 +2,9 @@ package com.android.qin;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
@@ -68,13 +70,21 @@ public class HisenseMallActivity extends BaseToolbarCompatActivity {
             @TargetApi(Build.VERSION_CODES.LOLLIPOP)
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-
-                if (request.getUrl().toString().contains("http") || request.getUrl().toString().contains("https")) {
+                LogUtil.w(TAG,"LOLLIPOP1111 request = "+request);
+                if (request.getUrl().toString().startsWith("http") || request.getUrl().toString().startsWith("https")) {
                     // 返回值是true的时候控制去WebView打开，为false调用系统浏览器或第三方浏览器
                     view.loadUrl(request.getUrl().toString());
                     return true;
+                }else {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(request.getUrl().toString()));
+                        startActivity(intent);
+                        return true;
+                    } catch (Exception e) {
+                        LogUtil.e(TAG,"shouldOverrideUrlLoading :"+Log.getStackTraceString(e));
+                        return false;
+                    }
                 }
-                return true;
             }
 
             /**

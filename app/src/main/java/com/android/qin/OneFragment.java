@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.android.peter.notificationdemo.NotifyMainActivity;
 import com.android.qin.one.ApkInstallPermissionActivity;
@@ -27,10 +28,32 @@ public class OneFragment extends Fragment {
         // Required empty public constructor
     }
 
-
+    int i = -1;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Button btn = mContentView.findViewById(R.id.test8);
+                            btn.setText(""+i++);
+                        }
+                    });
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        }).start();
+
         if (mContentView == null) {
             mContentView = inflater.inflate(R.layout.fragment_one, container, false);
             mContentView.findViewById(R.id.test1).setOnClickListener(v -> {
