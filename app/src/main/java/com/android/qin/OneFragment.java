@@ -37,6 +37,9 @@ public class OneFragment extends Fragment {
             @Override
             public void run() {
                 while (true){
+                    if(getActivity() == null){
+                        return;
+                    }
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

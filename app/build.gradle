@@ -27,7 +27,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        ndk{
+        ndk {
             moduleName "dev_logic"
             abiFilters "armeabi-v7a"
         }
@@ -35,7 +35,7 @@ android {
         //https://github.com/alibaba/ARouter
         javaCompileOptions {
             annotationProcessorOptions {
-                arguments = [ AROUTER_MODULE_NAME : project.getName() ]
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
             }
         }
 
@@ -46,9 +46,9 @@ android {
         disable 'GoogleAppIndexingWarning'
         baseline file("lint-baseline.xml")
     }
-    externalNativeBuild{
-        ndkBuild{
-            path file ("src/main/jni/Android.mk")
+    externalNativeBuild {
+        ndkBuild {
+            path file("src/main/jni/Android.mk")
         }
     }
     buildTypes {
@@ -66,11 +66,11 @@ android {
     productFlavors {//多渠道打包使用
         hismart {
             applicationId "com.hismart.easylink"
-           // manifestPlaceholders = [channel: "hismart"]
+            // manifestPlaceholders = [channel: "hismart"]
         }
         qin {
             applicationId "com.android.qin"
-           // manifestPlaceholders = [channel: "qin"]
+            // manifestPlaceholders = [channel: "qin"]
         }
     }
 
