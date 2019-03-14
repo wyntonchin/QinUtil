@@ -38,6 +38,21 @@ public class LoginServiceImpl implements IRouteLoginService {
     }
 
     @Override
+    public void addTokenListener(TokenListener tokenListener) {
+        TokenManager.getInstance().addTokenListener(tokenListener);
+    }
+
+    @Override
+    public void removeTokenListener(TokenListener tokenListener) {
+        TokenManager.getInstance().removeTokenListener(tokenListener);
+    }
+
+    @Override
+    public void removeAllTokenListener() {
+        TokenManager.getInstance().removeAllTokenListener();
+    }
+
+    @Override
     public void init(Context context) {
 
     }

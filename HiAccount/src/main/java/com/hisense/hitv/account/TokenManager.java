@@ -5,12 +5,14 @@ import android.util.Log;
 
 import com.hisense.hitv.account.pool.PriorityRunnable;
 import com.hisense.hitv.account.pool.ThreadPoolProxyFactory;
-import com.hisense.hitv.hicloud.bean.account.AppCodeReply;
 import com.hisense.hitv.hicloud.bean.account.SignonReplyInfo;
 import com.hismart.base.BaseConstant;
 import com.hismart.base.LogUtil;
-import com.hismart.base.ToastUtil;
+import com.hismart.base.router.IRouteLoginService;
 import com.hismart.base.router.InfoCallback;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author qinwendong
@@ -19,6 +21,7 @@ import com.hismart.base.router.InfoCallback;
  */
 public class TokenManager {
     private static final String TAG = "TokenManager";
+
     private static class SingleTon{
         private static TokenManager INSTANCE = new TokenManager();
     }
@@ -26,6 +29,9 @@ public class TokenManager {
     public static TokenManager getInstance(){
         return SingleTon.INSTANCE;
     }
+
+    private Set<IRouteLoginService.TokenListener> mTokenListeners = new HashSet<>();
+
 
     private float TOKEN_CONSUME_TIME_PERCENT = 0.9f;
 
@@ -44,6 +50,7 @@ public class TokenManager {
                 SignonReplyInfo sigonReply = HiServiceImpl.obtain().refreshToken(BaseConstant.APP_KEY);
                 if (sigonReply != null && sigonReply.getReply() == 0) {
                     callback.onSuccess(sigonReply.getDesc());
+                    notifyTokenUpdate(sigonReply.getToken());
                     LogUtil.e(TAG, "refreshNewToken success:customerId =" + sigonReply.getCustomerId());
                 } else if(sigonReply != null ){
                     callback.onError(Integer.valueOf(sigonReply.getError().getErrorCode()), sigonReply.getError().getErrorName());
@@ -153,4 +160,35 @@ public class TokenManager {
     void setRefreshTokenExpireDuration(long duration) {
         AccountSpUtil.setLong(HiServiceImpl.REFRESH_TOKEN_EXPIRE, duration);
     }
+
+
+    private void notifyTokenUpdate(String token){
+        Log.d(TAG,"notify token: "+token);
+        synchronized(mTokenListeners){
+            for(IRouteLoginService.TokenListener l : mTokenListeners){
+                l.onUpdateToken(token);
+            }
+        }
+
+    }
+
+    public void addTokenListener(IRouteLoginService.TokenListener tokenListener) {
+        synchronized (mTokenListeners){
+            mTokenListeners.add(tokenListener);
+        }
+    }
+
+    public void removeTokenListener(IRouteLoginService.TokenListener tokenListener) {
+        synchronized (mTokenListeners) {
+            mTokenListeners.remove(tokenListener);
+        }
+    }
+
+    public void removeAllTokenListener() {
+        synchronized (mTokenListeners) {
+            mTokenListeners.clear();
+        }
+    }
+
+
 }

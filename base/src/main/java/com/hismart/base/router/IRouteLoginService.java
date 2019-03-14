@@ -11,4 +11,13 @@ public interface IRouteLoginService extends IProvider {
 
     void refreshUserInfo();
 
+    void addTokenListener(TokenListener tokenListener);
+
+    void removeTokenListener(TokenListener tokenListener);
+
+    void removeAllTokenListener();
+
+    interface TokenListener{
+        void onUpdateToken(String token);
+    }
 }
