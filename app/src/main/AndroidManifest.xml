@@ -65,7 +65,7 @@
             android:name=".HisenseMallActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".JdMallActivity" />
-        <activity android:name=".two.HomeSelectorActivity"></activity>
+        <activity android:name=".two.HotelSelectorActivity"></activity>
     </application>
 
 </manifest>

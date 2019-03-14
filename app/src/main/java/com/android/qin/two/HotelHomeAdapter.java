@@ -1,23 +1,21 @@
 package com.android.qin.two;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.qin.R;
 
 /**
  * @author qinwendong
- * @date 2019/3/6
+ * @date 2019/3/7
  * descrption:
  */
-public class BuildingRvAdapter extends BaseRvAdapter {
+public class HotelHomeAdapter extends BaseRvAdapter {
 
-    private static final String TAG = "BuildingRvAdapter";
+    private static final String TAG = "HotelRoomAdapter";
 
     private String mSelectedName = null;
 
@@ -36,7 +34,7 @@ public class BuildingRvAdapter extends BaseRvAdapter {
         private TextView name;
 
         public ViewHolder(Context context, ViewGroup root) {
-            super(context, root, R.layout.adapter_text);
+            super(context, root, R.layout.adapter_hotel_home);
             name = itemView.findViewById(R.id.item_name);
         }
 

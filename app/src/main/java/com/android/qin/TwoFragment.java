@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import com.android.qin.threadpool.PriorityExecutor;
 import com.android.qin.threadpool.PriorityRunnable;
 import com.android.qin.threadpool.PriorityRunnable.Priority;
-import com.android.qin.two.HomeSelectorActivity;
+import com.android.qin.two.HotelSelectorActivity;
 import com.android.qin.util.ToastUtil;
 
 import java.util.concurrent.ExecutorService;
@@ -47,7 +47,7 @@ public class TwoFragment extends Fragment {
             });
 
             mContentView.findViewById(R.id.test3).setOnClickListener(v -> {
-                startActivity(new Intent(getActivity(), HomeSelectorActivity.class));
+                startActivity(new Intent(getActivity(), HotelSelectorActivity.class));
             });
         }
 
