@@ -11,7 +11,7 @@ import android.view.View;
 
 import com.android.qin.R;
 import com.android.qin.base.BaseCompatActivity;
-import com.android.qin.base.aspectj.SingleClick;
+//import com.android.qin.base.aspectj.SingleClick;
 import com.android.qin.util.LogUtil;
 import com.android.qin.util.ToastUtil;
 
@@ -23,7 +23,7 @@ public class RequestPermissionActivity extends BaseCompatActivity {
         setContentView(R.layout.activity_request_permission);
 
         findViewById(R.id.check_rationale).setOnClickListener(new View.OnClickListener() {
-            @SingleClick
+            //@SingleClick
             @Override
             public void onClick(View v) {
                 checkPermissions(new String[]{
@@ -36,7 +36,7 @@ public class RequestPermissionActivity extends BaseCompatActivity {
             }
         });
         findViewById(R.id.check_list).setOnClickListener(new View.OnClickListener() {
-            @SingleClick
+            //@SingleClick
             @Override
             public void onClick(View v) {
                 checkPermissions(new String[]{

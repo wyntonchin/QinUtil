@@ -45,11 +45,11 @@ android {
         disable 'GoogleAppIndexingWarning'
         baseline file("lint-baseline.xml")
     }
-    externalNativeBuild {
+/*    externalNativeBuild {
         ndkBuild {
             path file("src/main/jni/Android.mk")
         }
-    }
+    }*/
     buildTypes {
         release {
             minifyEnabled false
@@ -63,13 +63,14 @@ android {
 
     flavorDimensions "default" //统一使用一个维度
     productFlavors {//多渠道打包使用
-        hismart {
-            applicationId "com.hismart.easylink"
-            // manifestPlaceholders = [channel: "hismart"]
-        }
+
         qin {
             applicationId "com.android.qin"
             // manifestPlaceholders = [channel: "qin"]
+        }
+        hismart {
+            applicationId "com.hismart.easylink"
+            // manifestPlaceholders = [channel: "hismart"]
         }
     }
 

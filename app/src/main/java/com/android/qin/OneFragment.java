@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,7 @@ public class OneFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        new Thread(new Runnable() {
+/*        new Thread(new Runnable() {
             @Override
             public void run() {
                 while (true){
@@ -55,7 +56,7 @@ public class OneFragment extends Fragment {
                 }
 
             }
-        }).start();
+        }).start();*/
 
         if (mContentView == null) {
             mContentView = inflater.inflate(R.layout.fragment_one, container, false);
@@ -106,8 +107,31 @@ public class OneFragment extends Fragment {
             });
 
             mContentView.findViewById(R.id.test8).setOnClickListener(v -> {
-                getActivity().startActivity(new Intent(getActivity(), JdMallActivity.class));
+                //getActivity().startActivity(new Intent(getActivity(), JdMallActivity.class));
 
+                try {
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("searchKey","123");
+                    bundle.putString("spuCode","1234");
+                    intent.putExtras(bundle);
+                    ComponentName cn = new ComponentName("com.hismart.easylink", "com.hismart.easylink.launch.activity.SplashActivity");
+                    intent.setComponent(cn);
+                    getActivity().startActivity(intent);
+/*                    PackageManager packageManager = context.getPackageManager();
+                    intent = new Intent();
+                    intent = packageManager.getLaunchIntentForPackage("com.panxsoft.xiaojingxiuxiu");
+                    if (intent == null) {
+                        ToastUtil.showShortToast("没有找到着装页面");
+                    } else {
+                        context.startActivity(intent);
+                    }*/
+                } catch (Exception e) {
+                    Log.e("qwd", ""+Log.getStackTraceString(e));
+                    e.printStackTrace();
+                    ToastUtil.showShortToast("没有找到美妆页面.");
+                }
             });
         }
 
