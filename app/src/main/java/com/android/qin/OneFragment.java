@@ -15,6 +15,7 @@ import android.widget.Button;
 import com.android.peter.notificationdemo.NotifyMainActivity;
 import com.android.qin.one.ApkInstallPermissionActivity;
 import com.android.qin.one.RequestPermissionActivity;
+import com.android.qin.rxdemo.RxDemoActivity;
 import com.android.qin.util.ToastUtil;
 
 
@@ -133,6 +134,11 @@ public class OneFragment extends Fragment {
                     ToastUtil.showShortToast("没有找到美妆页面.");
                 }
             });
+
+            mContentView.findViewById(R.id.test9).setOnClickListener(v -> {
+
+                rxDemo();
+            });
         }
 
 
@@ -144,4 +150,9 @@ public class OneFragment extends Fragment {
         return mContentView;
     }
 
+
+    public void rxDemo(){
+        Intent intent = new Intent(getActivity(), RxDemoActivity.class);
+        startActivity(intent);
+    }
 }

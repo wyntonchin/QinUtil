@@ -26,10 +26,10 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        ndk {
+  /*      ndk {
             moduleName "dev_logic"
             abiFilters "armeabi-v7a"
-        }
+        }*/
 
         //https://github.com/alibaba/ARouter
         javaCompileOptions {
@@ -109,4 +109,7 @@ dependencies {
         implementation 'com.facebook.stetho:stetho-okhttp3:1.3.1'//@{non-proguard}*/
     implementation 'org.aspectj:aspectjrt:1.8.9'
     annotationProcessor 'com.alibaba:arouter-compiler:1.2.2'
+
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.1'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 }

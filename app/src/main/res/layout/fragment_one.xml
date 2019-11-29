@@ -58,5 +58,13 @@
             android:layout_height="wrap_content"
             android:text="JD商城"
             android:textColor="@android:color/black"/>
+
+        <Button
+            android:id="@+id/test9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="RXdemo"
+            android:onClick="rxDemo"
+            android:textColor="@android:color/black"/>
 </LinearLayout>
 </ScrollView>
