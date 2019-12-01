@@ -144,7 +144,7 @@ public class AppUtil {
         if (sApplication == null) {
             sApplication = app;
             sApplication.registerActivityLifecycleCallbacks(ACTIVITY_LIFECYCLE);
-            initLeakCanary();
+           // initLeakCanary();
             initStetho();
         }
     }
