@@ -31,6 +31,7 @@ public class OneFragment extends Fragment {
     }
 
     int i = -1;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -87,13 +88,13 @@ public class OneFragment extends Fragment {
             });
 
             mContentView.findViewById(R.id.test5).setOnClickListener(v -> {
-                        PackageManager packageManager = getActivity().getPackageManager();
-                        Intent intent =packageManager.getLaunchIntentForPackage("com.hismart.easylink");
-                        if(intent==null){
-                            ToastUtil.showShortToast("未安装");
-                        }else {
-                            startActivity(intent);
-                        }
+                PackageManager packageManager = getActivity().getPackageManager();
+                Intent intent = packageManager.getLaunchIntentForPackage("com.hismart.easylink");
+                if (intent == null) {
+                    ToastUtil.showShortToast("未安装");
+                } else {
+                    startActivity(intent);
+                }
 
             });
 
@@ -114,8 +115,8 @@ public class OneFragment extends Fragment {
                     Intent intent = new Intent(Intent.ACTION_MAIN);
                     intent.addCategory(Intent.CATEGORY_LAUNCHER);
                     Bundle bundle = new Bundle();
-                    bundle.putString("searchKey","123");
-                    bundle.putString("spuCode","1234");
+                    bundle.putString("searchKey", "123");
+                    bundle.putString("spuCode", "1234");
                     intent.putExtras(bundle);
                     ComponentName cn = new ComponentName("com.hismart.easylink", "com.hismart.easylink.launch.activity.SplashActivity");
                     intent.setComponent(cn);
@@ -129,7 +130,7 @@ public class OneFragment extends Fragment {
                         context.startActivity(intent);
                     }*/
                 } catch (Exception e) {
-                    Log.e("qwd", ""+Log.getStackTraceString(e));
+                    Log.e("qwd", "" + Log.getStackTraceString(e));
                     e.printStackTrace();
                     ToastUtil.showShortToast("没有找到美妆页面.");
                 }
@@ -139,6 +140,17 @@ public class OneFragment extends Fragment {
 
                 rxDemo();
             });
+
+            mContentView.findViewById(R.id.test9).setOnClickListener(v -> {
+
+                rxDemo();
+            });
+
+            mContentView.findViewById(R.id.test10).setOnClickListener(v -> {
+
+                juhaokan();
+            });
+
         }
 
 
@@ -151,8 +163,22 @@ public class OneFragment extends Fragment {
     }
 
 
-    public void rxDemo(){
+    public void rxDemo() {
         Intent intent = new Intent(getActivity(), RxDemoActivity.class);
         startActivity(intent);
+    }
+
+    public void juhaokan() {
+        try {
+            Intent intent = new Intent();
+
+            intent.setClassName("com.hisense.ms.fly2tv", "com.hisense.ms.fly2tv.messageboard.activity.ActivityMessageboard");
+
+            startActivity(intent);
+        } catch (Exception e) {
+            Log.e("qwd", "" + Log.getStackTraceString(e));
+            e.printStackTrace();
+            ToastUtil.showShortToast("请更新海信聚好看APP到最新版.");
+        }
     }
 }
