@@ -69,7 +69,7 @@ android {
             // manifestPlaceholders = [channel: "qin"]
         }
         hismart {
-            applicationId "com.hismart.easylink"
+            applicationId "com.hismart.easylink.q"
             // manifestPlaceholders = [channel: "hismart"]
         }
     }
@@ -113,4 +113,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.9'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
     implementation 'com.google.android:flexbox:1.0.0'
+
+    implementation 'top.zibin:Luban:1.1.8'
+    implementation 'id.zelory:compressor:3.0.0'
 }

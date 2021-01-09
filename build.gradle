@@ -8,7 +8,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.3'
+        classpath 'com.android.tools.build:gradle:4.0.1'
         //classpath "io.objectbox:objectbox-gradle-plugin:$objectboxVersion"
 
         // NOTE: Do not place your application dependencies here; they belong

@@ -31,10 +31,10 @@
             android:text="家庭筛选器"
             android:textColor="@android:color/black"/>
         <Button
-            android:id="@+id/test4"
+            android:id="@+id/luban"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="测试1"
+            android:text="luban压缩图片目录,1.png"
             android:textColor="@android:color/black"/>
         <Button
             android:id="@+id/test5"

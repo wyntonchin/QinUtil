@@ -24,6 +24,9 @@
             android:name=".LoginActivity"
             android:label="@string/title_activity_login"
             android:launchMode="singleTask" />
+
+
+
         <activity
             android:name=".RegisterMobileActivity"
             android:label="@string/hi_account_register" />

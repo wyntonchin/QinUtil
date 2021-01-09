@@ -121,13 +121,13 @@ public class OneFragment extends Fragment {
                     ComponentName cn = new ComponentName("com.hismart.easylink", "com.hismart.easylink.launch.activity.SplashActivity");
                     intent.setComponent(cn);
                     getActivity().startActivity(intent);
-/*                    PackageManager packageManager = context.getPackageManager();
-                    intent = new Intent();
+/*                    PackageManager packageManager = getActivity().getPackageManager();
+                    Intent intent = new Intent();
                     intent = packageManager.getLaunchIntentForPackage("com.panxsoft.xiaojingxiuxiu");
                     if (intent == null) {
                         ToastUtil.showShortToast("没有找到着装页面");
                     } else {
-                        context.startActivity(intent);
+                        getActivity().startActivity(intent);
                     }*/
                 } catch (Exception e) {
                     Log.e("qwd", "" + Log.getStackTraceString(e));
@@ -171,14 +171,28 @@ public class OneFragment extends Fragment {
     public void juhaokan() {
         try {
             Intent intent = new Intent();
-
-            intent.setClassName("com.hisense.ms.fly2tv", "com.hisense.ms.fly2tv.messageboard.activity.ActivityMessageboard");
-
+            intent.setClassName("com.hismart.easylink", "com.hismart.easylink.launch.activity.SplashActivity");
+            intent.putExtra("menuId", "1234");
             startActivity(intent);
         } catch (Exception e) {
             Log.e("qwd", "" + Log.getStackTraceString(e));
             e.printStackTrace();
             ToastUtil.showShortToast("请更新海信聚好看APP到最新版.");
         }
+
+
+
+/*        try {
+            Intent intent = new Intent();
+
+            //intent.setClassName("com.hisense.ms.fly2tv", "com.hisense.ms.fly2tv.messageboard.activity.ActivityMessageboard");
+            intent.setClassName("com.hisense.ms.fly2tv", "com.hisense.ms.fly2tv.messageboard.activity.HXJGuideActivity");
+
+            startActivity(intent);
+        } catch (Exception e) {
+            Log.e("qwd", "" + Log.getStackTraceString(e));
+            e.printStackTrace();
+            ToastUtil.showShortToast("请更新海信聚好看APP到最新版.");
+        }*/
     }
 }
